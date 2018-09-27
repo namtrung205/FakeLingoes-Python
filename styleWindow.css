@@ -1,0 +1,11 @@
+MeaningWindow{background-color: rgb(99, 99, 99) ; border: 0px solid red;} 
+QComboBox{background-color: rgb(99, 99, 99) ; border: 1px solid rgba(70, 70, 70, 0.521);} 
+QTabWidget{background-color: rgb(109, 110, 106) ; border: 0px solid;} 
+QPtyWidget{background-color: rgb(109, 110, 106) ; border: 0px solid;} 
+QDoubleSpinBox{background-color: rgb(109, 110, 106) ; border: 1px solid rgb(100, 100, 89);}
+TranslateMainWindow{background-color: rgb(109, 110, 106) ; border: 10px solid red;}
+QScrollBar:vertical{background-color: rgba(255,255,255,0.5) ; border: None; width: 4px;}
+myIconButton{border: 0px solid;}
+QTextEdit{background-color: rgb(40, 50, 39); color: white; border: 1px solid black;}
+QLineEdit{background-color: rgb(40, 40, 39); color: white; border: 1px solid; border: 1px solid black;}
+QLabel{border: 0px solid;color: black;}
