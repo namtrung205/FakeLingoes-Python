@@ -1,0 +1,16 @@
+MANIFEST.in
+README.rst
+setup.cfg
+setup.py
+pyqtkeybind/__init__.py
+pyqtkeybind.egg-info/PKG-INFO
+pyqtkeybind.egg-info/SOURCES.txt
+pyqtkeybind.egg-info/dependency_links.txt
+pyqtkeybind.egg-info/top_level.txt
+pyqtkeybind/win/__init__.py
+pyqtkeybind/win/keybindutil.py
+pyqtkeybind/win/keycodes.py
+pyqtkeybind/x11/__init__.py
+pyqtkeybind/x11/keybindutil.py
+pyqtkeybind/x11/keysymdef.py
+pyqtkeybind/x11/qt_keycodes.py

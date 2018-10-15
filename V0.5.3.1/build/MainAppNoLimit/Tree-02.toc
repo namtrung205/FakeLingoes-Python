@@ -1,0 +1,6 @@
+('D:\\DEV\\02. Fake lingoes and ocr\\V5.3 - No '
+ 'limit\\build\\MainAppNoLimit\\pyqtkeybind-0.0.3-py3.4.egg',
+ None,
+ {'*.py', 'EGG-INFO', '*.pyd', '*.pyc', '*.pyw'},
+ 'DATA',
+ [])
