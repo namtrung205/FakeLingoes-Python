@@ -717,8 +717,8 @@ class TranslateMainWindow(QWidget):
 				self.outputBox.setHtml(lingoesDic[mytext2])
 				self.outputBox.setFont(self.outputFont3)
 				
-				if self.height() < 300:
-					self.setFixedHeight(300)
+				if self.height() < 200:
+					self.setFixedHeight(200)
 
 			else:
 				outText = myTimer(googleTrans,(mytext, self.fromSym, self.toSym), self.myTimeOutTrans )
@@ -759,8 +759,8 @@ class TranslateMainWindow(QWidget):
 				self.outputBox.setHtml(lingoesDic[mytext])
 				self.outputBox.setFont(self.outputFont3)
 				
-				if self.height() < 300:
-					self.setFixedHeight(300)
+				if self.height() < 200:
+					self.setFixedHeight(200)
 			else:
 				self.outputBox.setHtml("<h3></h3>")
 
@@ -871,10 +871,10 @@ class TranslateMainWindow(QWidget):
 
 		heightMonitor = work_area[3]
 		widthMonitor = work_area[2]
-		if self.height() <=300:
+		if self.height() <=200:
 			self.inputBox.show()
 			self.inputBoxRaw.hide()
-			self.setFixedSize(300, heightMonitor-100)
+			self.setFixedSize(250, heightMonitor-100)
 			self.move(widthMonitor - self.width(), 40)
 			self.outputBox.setFont(self.outputFont3)
 		else:
@@ -883,7 +883,7 @@ class TranslateMainWindow(QWidget):
 			mytext = (self.inputBox.toPlainText()).lower()
 			mytext2 = re.sub("^\s+|\s+$", "", mytext, flags=re.UNICODE)
 			if(mytext2 in myLingoesListWords):
-				self.setFixedSize(400, 300)
+				self.setFixedSize(400, 200)
 				self.outputBox.setFont(self.outputFont3)
 			else:
 				self.setFixedSize(400, 150)
