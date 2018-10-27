@@ -26,6 +26,7 @@ import playsound
 import os
 import time
 from multiprocessing import Pool, TimeoutError
+import re
 # pyWin32
 import ctypes
 from win32api import GetMonitorInfo, MonitorFromPoint
@@ -54,6 +55,27 @@ myLangDict = {
 			 }
 
 # listNameLang = sorted(list(myLangDict.keys()))
+
+# E:\DEV\02. Fake lingoes and ocr\V5.4\Resources\Dictionaries\English_Vietnamese_Dic.txt
+# Impoert tu dien vao trong 
+lingoesDic = {}
+
+# Open file
+LingoesDicTxt = open(".\Resources\Dictionaries\English_Vietnamese_Dic.txt", 'r', encoding="utf-8")
+
+for line in LingoesDicTxt:
+	listWordLine = list(str(line).split("|"))
+	lingoesDic[str(listWordLine[1])] = listWordLine[2]
+
+myLingoesListWords = lingoesDic.keys()
+
+lingoesModel = QtCore.QStringListModel()
+lingoesModel.setStringList(myLingoesListWords)
+
+lingoesCompleter = QtWidgets.QCompleter()
+lingoesCompleter.setModel(lingoesModel)
+
+
 
 
 class TranslateMainWindow(QWidget):
@@ -85,10 +107,14 @@ class TranslateMainWindow(QWidget):
 
 	# out Font
 	outputFont1 = QFont()
-	outputFont1.setPointSize(11)
+	outputFont1.setPointSize(9)
 
 	outputFont2 = QFont()
-	outputFont2.setPointSize(14)
+	outputFont2.setPointSize(13)
+	
+
+	outputFont3 = QFont()
+	outputFont3.setPointSize(9)
 
 	# Constructor
 	def __init__(self, parent = None):
@@ -225,6 +251,7 @@ class TranslateMainWindow(QWidget):
 		self.inputBoxRaw = QLineEdit()
 		self.inputBoxRaw.setPlaceholderText("Tu (cum tu) can dich...")
 		self.inputBoxRaw.setFont(self.inputFont)
+		self.inputBoxRaw.setCompleter(lingoesCompleter)
 
 		# input text Line
 		self.inputBox = QTextEdit()
@@ -629,6 +656,7 @@ class TranslateMainWindow(QWidget):
 		self.meaningdWindow.Oxford_appID = self.Oxford_appID
 		self.meaningdWindow.Oxford_appKey= self.Oxford_appKey
 		print("text changed")
+		self.autoChangeOut()
 
 	def detectClipboardUrl(self):
 		try:
@@ -683,9 +711,59 @@ class TranslateMainWindow(QWidget):
 			if text == "" or text == False:
 				mytext = str(self.inputBox.toPlainText()).lower()
 
-			outText = myTimer(googleTrans,(mytext, self.fromSym, self.toSym), self.myTimeOutTrans )
+				mytext2 = re.sub("^\s+|\s+$", "", mytext, flags=re.UNICODE)
+			
+			if mytext2 in myLingoesListWords:
+				self.outputBox.setHtml(lingoesDic[mytext2])
+				self.outputBox.setFont(self.outputFont3)
+				
+				if self.height() < 300:
+					self.setFixedHeight(300)
 
-			self.outputBox.setPlainText(outText)
+			else:
+				outText = myTimer(googleTrans,(mytext, self.fromSym, self.toSym), self.myTimeOutTrans )
+				self.outputBox.setFont(self.outputFont3)
+				outText = str(outText).replace("\n","<br>")
+				outTextHtml = "<h3>%s<h3>" %outText
+
+				if self.height() == 300:
+					self.setFixedHeight(150)
+				# self.outputBox.setPlainText(outText)
+				self.outputBox.setHtml(outTextHtml)
+
+			self.meaningdWindow.hide()
+			self.functionFinished()
+
+		except Exception as e:
+			QMessageBox.information(self, "Information", str(e) + "Error 2")
+			self.functionNotSuccess()
+		print("None check: " + str(time.time() - timestart))
+
+
+	# #  Transwith limit time
+	def autoChangeOut(self, text = ""):
+		self.functionStart()
+		timestart = time.time()
+		try:
+			if not self.show_action.isChecked():
+				self.show2()
+			# self.meaningdWindow = MeaningWindow(self.Oxford_appID, self.Oxford_appKey,self.inputBox.toPlainText())
+			self.meaningdWindow.move(self.x(), self.y()+150)
+			
+			if text == "" or text == False:
+				mytext = str(self.inputBox.toPlainText()).lower()
+				# " ".join(mytext.split())
+				mytext = re.sub("^\s+|\s+$", "", mytext, flags=re.UNICODE)
+			
+			if mytext in myLingoesListWords:
+				self.outputBox.setHtml(lingoesDic[mytext])
+				self.outputBox.setFont(self.outputFont3)
+				
+				if self.height() < 300:
+					self.setFixedHeight(300)
+			else:
+				self.outputBox.setHtml("<h3></h3>")
+
 			self.meaningdWindow.hide()
 			self.functionFinished()
 
@@ -793,18 +871,24 @@ class TranslateMainWindow(QWidget):
 
 		heightMonitor = work_area[3]
 		widthMonitor = work_area[2]
-		if self.height() <=150:
+		if self.height() <=300:
 			self.inputBox.show()
 			self.inputBoxRaw.hide()
-			self.setFixedSize(250, heightMonitor-200)
+			self.setFixedSize(300, heightMonitor-100)
 			self.move(widthMonitor - self.width(), 40)
-			self.outputBox.setFont(self.outputFont1)
+			self.outputBox.setFont(self.outputFont3)
 		else:
 			self.inputBox.hide()
 			self.inputBoxRaw.show()
-			self.setFixedSize(400, 150)
+			mytext = (self.inputBox.toPlainText()).lower()
+			mytext2 = re.sub("^\s+|\s+$", "", mytext, flags=re.UNICODE)
+			if(mytext2 in myLingoesListWords):
+				self.setFixedSize(400, 300)
+				self.outputBox.setFont(self.outputFont3)
+			else:
+				self.setFixedSize(400, 150)
+				self.outputBox.setFont(self.outputFont3)
 			self.move(widthMonitor-400 , 40)
-			self.outputBox.setFont(self.outputFont2)
 
 		self.meaningdWindow.hide()
 

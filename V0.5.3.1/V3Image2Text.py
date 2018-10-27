@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from PIL import Image, ImageEnhance
-from pytesseract import image_to_string
+from pytesseract import image_to_string, pytesseract
+
 
 from orcSpaceLib import OCRSpace
 
@@ -23,6 +24,8 @@ def ImageToText(image=".\Capture\\capture.png"):
 		imgContrastE.save(".\Capture\\capture2.png")
 
 		imgModified = Image.open(".\Capture\\capture2.png")
+		# pytesseract.tesseract_cmd = 'C:\\Program Files (x86)\\Tesseract-OCR\\tesseract.exe'
+
 
 		text = image_to_string(imgModified)
 		print(text)

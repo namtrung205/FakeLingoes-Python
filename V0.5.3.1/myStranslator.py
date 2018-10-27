@@ -19,4 +19,3 @@ def googleTrans(myText,fromLang='en', toLang='vi'):
 		except:
 			print("Error googletrans 1")
 	return outText
-

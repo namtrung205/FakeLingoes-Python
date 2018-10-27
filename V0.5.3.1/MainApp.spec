@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['MainApp.py'],
-             pathex=['D:\\DEV\\02. Fake lingoes and ocr\\V5.3'],
+             pathex=['E:\\DEV\\02. Fake lingoes and ocr\\V5.4'],
              binaries=[],
              datas=[],
              hiddenimports = [

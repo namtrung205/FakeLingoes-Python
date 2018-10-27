@@ -122,3 +122,5 @@ class SoHoaDic():
 
 
 
+# a = SoHoaDic()
+# print(a.getFullHtmlEn("construction"))
