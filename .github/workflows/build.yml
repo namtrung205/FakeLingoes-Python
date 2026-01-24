@@ -31,14 +31,9 @@ jobs:
       run: |
         pyinstaller FakeLingoes.spec
 
-    - name: Build Installer with Inno Setup
-      uses: miniersoft/setup-innosetup@v1
-      with:
-        inno-version: 6.2.2
-
     - name: Compile Inno Setup Script
       run: |
-        iscc installer.iss
+        ./Installer/InnoSetup/ISCC.exe installer.iss
 
     - name: Upload Installer Artifact
       uses: actions/upload-artifact@v4

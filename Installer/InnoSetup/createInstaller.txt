@@ -1,0 +1,17 @@
+[Setup]
+AppName=Navisworks Cim Tools
+AppVersion=1.0
+DefaultDirName={pf}\NavisworksCimTools  ; You can leave this if you don't need a default installation directory
+DefaultGroupName=Navisworks Cim Tools
+OutputDir=C:\path\to\output  ; Set the output directory for the installer
+OutputBaseFilename=NavisworksCimToolsInstaller
+
+[Files]
+Source: "C:\ProgramData\Autodesk\ApplicationPlugins\NavisworksCimToolsApp.TTD.bundle\*"; DestDir: "{code:GetProgramData}\Autodesk\ApplicationPlugins\NavisworksCimToolsApp.TTD.bundle"; Flags: ignoreversion recursesubdirs createallsubdirs
+
+
+[Code]
+function GetProgramData(Param: string): string;
+begin
+  Result := ExpandConstant('{pf}') + '\..';  // Returns the path for %ProgramData%
+end;

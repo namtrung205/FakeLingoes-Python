@@ -23,7 +23,7 @@ OutputBaseFilename=FakeLingoes_Setup
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
-IconFilename=icon.ico
+SetupIconFile=icon.ico
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
