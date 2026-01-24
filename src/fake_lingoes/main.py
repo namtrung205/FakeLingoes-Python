@@ -15,6 +15,12 @@ from PyQt5.QtCore import QAbstractNativeEventFilter, QAbstractEventDispatcher
 
 from PyQt5.QtWidgets import qApp, QApplication, QMessageBox
 
+# Fix for direct execution/debugging: ensure 'src' is in sys.path
+current_dir = os.path.dirname(os.path.abspath(__file__))
+src_path = os.path.abspath(os.path.join(current_dir, ".."))
+if src_path not in sys.path:
+    sys.path.insert(0, src_path)
+
 from fake_lingoes.ui.main_window import TranslateMainWindow
 from fake_lingoes.utils.path_helper import get_resource_path
 

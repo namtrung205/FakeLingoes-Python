@@ -1,0 +1,15 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Fake Lingoes",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/fake_lingoes/main.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src"
+            }
+        }
+    ]
+}
