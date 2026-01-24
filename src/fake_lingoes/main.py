@@ -23,6 +23,7 @@ if src_path not in sys.path:
 
 from fake_lingoes.ui.main_window import TranslateMainWindow
 from fake_lingoes.utils.path_helper import get_resource_path
+from fake_lingoes import __version__
 
 from pyqtkeybind import keybinder
 
@@ -110,6 +111,7 @@ if __name__ == '__main__':
 
     # Main Window
     windowMain = TranslateMainWindow()
+    windowMain.setWindowTitle(f"Fake Lingoes v{__version__}")
 
     
 
