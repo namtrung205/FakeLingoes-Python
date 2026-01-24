@@ -7,3 +7,6 @@ dist/
 build/
 Tempfile/
 Capture/
+build_tmp
+Release
+Capture
