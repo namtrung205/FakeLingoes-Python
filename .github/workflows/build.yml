@@ -54,22 +54,33 @@ jobs:
         # Update src/fake_lingoes/__init__.py
         (Get-Content src/fake_lingoes/__init__.py) -replace '__version__ = ".*"', "__version__ = ""$newVersion""" | Set-Content src/fake_lingoes/__init__.py
 
-        # Update installer.iss
-        (Get-Content installer.iss) -replace '#define MyAppVersion ".*"', "#define MyAppVersion ""$newVersion""" | Set-Content installer.iss
+        # Update Installer/installer.iss
+        (Get-Content Installer/installer.iss) -replace '#define MyAppVersion ".*"', "#define MyAppVersion ""$newVersion""" | Set-Content Installer/installer.iss
 
     - name: Build with PyInstaller
       run: |
         pyinstaller FakeLingoes.spec
 
+    - name: Download Tesseract Installer
+      shell: pwsh
+      run: |
+        $tesseractPath = "Installer/tesseract-ocr-w64-setup-5.5.0.20241111.exe"
+        if (-not (Test-Path $tesseractPath)) {
+          echo "Downloading Tesseract installer..."
+          Invoke-WebRequest -Uri "https://github.com/UB-Mannheim/tesseract/wiki/download/tesseract-ocr-w64-setup-5.5.0.20241111.exe" -OutFile $tesseractPath
+        } else {
+          echo "Tesseract installer already exists in Installer/ folder."
+        }
+
     - name: Compile Inno Setup Script
       run: |
-        ./Installer/InnoSetup/ISCC.exe installer.iss
+        ./Installer/InnoSetup/ISCC.exe Installer/installer.iss
 
     - name: Upload Installer Artifact
       uses: actions/upload-artifact@v4
       with:
         name: FakeLingoes_Setup_${{ env.NEW_VERSION || steps.versioning.outputs.version }}
-        path: installer_output/FakeLingoes_Setup_${{ env.NEW_VERSION || steps.versioning.outputs.version }}.exe
+        path: Installer/installer_output/FakeLingoes_Setup_${{ env.NEW_VERSION || steps.versioning.outputs.version }}.exe
 
     - name: Commit and Tag Version
       if: github.event_name == 'push' && (github.ref == 'refs/heads/release' || github.ref == 'refs/heads/main')
@@ -77,7 +88,7 @@ jobs:
       run: |
         git config user.name "github-actions"
         git config user.email "github-actions@github.com"
-        git add VERSION src/fake_lingoes/__init__.py installer.iss
+        git add VERSION src/fake_lingoes/__init__.py Installer/installer.iss
         git commit -m "chore: bump version to ${{ env.NEW_VERSION }} [skip ci]"
         git tag "v${{ env.NEW_VERSION }}"
         git push origin HEAD --tags
@@ -87,6 +98,6 @@ jobs:
       uses: softprops/action-gh-release@v2
       with:
         tag_name: v${{ env.NEW_VERSION || steps.versioning.outputs.version }}
-        files: installer_output/FakeLingoes_Setup_${{ env.NEW_VERSION || steps.versioning.outputs.version }}.exe
+        files: Installer/installer_output/FakeLingoes_Setup_${{ env.NEW_VERSION || steps.versioning.outputs.version }}.exe
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
