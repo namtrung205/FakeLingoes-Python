@@ -23,24 +23,27 @@ def ImageToText(image=os.path.join("Capture", "capture.png")):
 		imgModified = Image.open(output_path)
 		
 		# Proactively find Tesseract path
-		tesseract_paths = [
-			r'C:\Program Files\Tesseract-OCR\tesseract.exe',
-			r'C:\Program Files (x86)\Tesseract-OCR\tesseract.exe',
-			os.path.join(os.environ.get("ProgramFiles", "C:\\Program Files"), "Tesseract-OCR", "tesseract.exe"),
-			os.path.join(os.environ.get("ProgramFiles(x86)", "C:\\Program Files (x86)"), "Tesseract-OCR", "tesseract.exe"),
-		]
-		
-		found_path = None
-		for path in tesseract_paths:
-			if os.path.exists(path):
-				found_path = path
-				break
-		
-		if found_path:
-			pytesseract.tesseract_cmd = found_path
+		if os.name == 'nt':  # Windows
+			tesseract_paths = [
+				r'C:\Program Files\Tesseract-OCR\tesseract.exe',
+				r'C:\Program Files (x86)\Tesseract-OCR\tesseract.exe',
+				os.path.join(os.environ.get("ProgramFiles", "C:\\Program Files"), "Tesseract-OCR", "tesseract.exe"),
+				os.path.join(os.environ.get("ProgramFiles(x86)", "C:\\Program Files (x86)"), "Tesseract-OCR", "tesseract.exe"),
+			]
+			
+			found_path = None
+			for path in tesseract_paths:
+				if os.path.exists(path):
+					found_path = path
+					break
+			
+			if found_path:
+				pytesseract.tesseract_cmd = found_path
+			else:
+				print("Warning: Tesseract-OCR not found in standard Windows paths.")
 		else:
-			# Fallback or error handling if not found
-			print("Warning: Tesseract-OCR not found in standard paths.")
+			# On Linux/macOS, tesseract is usually in PATH
+			pytesseract.tesseract_cmd = 'tesseract'
 
 		text = image_to_string(imgModified)
 		print(text)

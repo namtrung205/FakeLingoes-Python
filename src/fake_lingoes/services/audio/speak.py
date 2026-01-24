@@ -3,7 +3,8 @@ import pyttsx3
 
 def myPyttsx3(textNeedSpeech, rate=100):
 	try:
-		engine = pyttsx3.init(driverName='sapi5')
+		# Remove driverName='sapi5' to support cross-platform (it will auto-detect)
+		engine = pyttsx3.init()
 		engine.setProperty('rate', rate)
 		engine.setProperty('volume', 10)
 		engine.say(textNeedSpeech)

@@ -20,7 +20,9 @@ import time
 
 
 
-from win32api import GetMonitorInfo, MonitorFromPoint
+import platform
+if platform.system() == "Windows":
+    from win32api import GetMonitorInfo, MonitorFromPoint
 
 
 from fake_lingoes.services.dictionary.oxford_api import OxFordDic, WordNotFound

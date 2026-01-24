@@ -21,16 +21,19 @@ from gtts import gTTS
 from gtts.tts import gTTSError
 import playsound
 
-# Bulld-in
+# Build-in
 import os
 import time
 from multiprocessing import Pool, TimeoutError
 import re
-# pyWin32
-import ctypes
-from win32api import GetMonitorInfo, MonitorFromPoint
-from win32gui import SetWindowPos
-import win32con
+
+# Platform specifics
+import platform
+if platform.system() == "Windows":
+    import ctypes
+    from win32api import GetMonitorInfo, MonitorFromPoint
+    from win32gui import SetWindowPos
+    import win32con
 
 # Incon
 # myappid = 'mycompany.myproduct.subproduct.version' # arbitrary string
@@ -43,10 +46,17 @@ from fake_lingoes.utils.path_helper import get_resource_path
 
 
 # Monitor
-monitor_info = GetMonitorInfo(MonitorFromPoint((0,0)))
-work_area = monitor_info.get("Work")
-heightMonitor = work_area[3]
-widthMonitor = work_area[2]
+if platform.system() == "Windows":
+    monitor_info = GetMonitorInfo(MonitorFromPoint((0,0)))
+    work_area = monitor_info.get("Work")
+    heightMonitor = work_area[3]
+    widthMonitor = work_area[2]
+else:
+    # Cross-platform monitor info using PyQt
+    desktop = QApplication.desktop()
+    screen_rect = desktop.availableGeometry()
+    heightMonitor = screen_rect.height()
+    widthMonitor = screen_rect.width()
 
 # Support language
 myLangDict = {
@@ -500,14 +510,16 @@ class TranslateMainWindow(QWidget):
 	def show2(self):
 		self.meaningdWindow.hide()
 
-		SetWindowPos(self.winId(),
-             win32con.HWND_TOPMOST, # = always on top. only reliable way to bring it to the front on windows
-             0, 0, 0, 0,
-             win32con.SWP_NOMOVE | win32con.SWP_NOSIZE | win32con.SWP_SHOWWINDOW)
-		SetWindowPos(self.winId(),
-             win32con.HWND_NOTOPMOST, # disable the always on top, but leave window at its top position
-             0, 0, 0, 0,
-             win32con.SWP_NOMOVE | win32con.SWP_NOSIZE | win32con.SWP_SHOWWINDOW)
+		if platform.system() == "Windows":
+			SetWindowPos(self.winId(),
+				 win32con.HWND_TOPMOST, # = always on top. only reliable way to bring it to the front on windows
+				 0, 0, 0, 0,
+				 win32con.SWP_NOMOVE | win32con.SWP_NOSIZE | win32con.SWP_SHOWWINDOW)
+			SetWindowPos(self.winId(),
+				 win32con.HWND_NOTOPMOST, # disable the always on top, but leave window at its top position
+				 0, 0, 0, 0,
+				 win32con.SWP_NOMOVE | win32con.SWP_NOSIZE | win32con.SWP_SHOWWINDOW)
+		
 		
 		self.raise_()
 		self.show()
