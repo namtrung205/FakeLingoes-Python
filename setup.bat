@@ -52,4 +52,5 @@ echo ======================================================
 echo To start debugging, open the project in VS Code and press F5.
 echo To build the EXE, run: .\venv\Scripts\pyinstaller FakeLingoes.spec
 echo ======================================================
+
 pause
