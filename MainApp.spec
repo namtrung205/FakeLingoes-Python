@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['src/fake_lingoes/main.py'],
-             pathex=['.'],
+             pathex=['src'],
              binaries=[],
              datas=[
                  ('Resources', 'Resources'),
