@@ -9,6 +9,9 @@ on:
     branches: [ "main", "release" ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: windows-latest
@@ -41,10 +44,24 @@ jobs:
         name: FakeLingoes_Setup
         path: installer_output/FakeLingoes_Setup.exe
 
+    - name: Generate Version Tag
+      id: tagger
+      if: github.event_name == 'push' && github.ref == 'refs/heads/release'
+      shell: pwsh
+      run: |
+        $date = Get-Date -Format "yyyy.MM.dd.HHmm"
+        $tag = "v$date"
+        echo "tag=$tag" >> $env:GITHUB_OUTPUT
+        git config user.name "github-actions"
+        git config user.email "github-actions@github.com"
+        git tag $tag
+        git push origin $tag
+
     - name: Create Release
-      if: github.event_name == 'push' && contains(github.ref, 'tags')
+      if: (github.event_name == 'push' && github.ref == 'refs/heads/release') || contains(github.ref, 'tags')
       uses: softprops/action-gh-release@v2
       with:
+        tag_name: ${{ steps.tagger.outputs.tag || github.ref_name }}
         files: installer_output/FakeLingoes_Setup.exe
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

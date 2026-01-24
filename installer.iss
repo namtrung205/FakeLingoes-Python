@@ -25,6 +25,9 @@ SolidCompression=yes
 WizardStyle=modern
 SetupIconFile=icon.ico
 
+[Dirs]
+Name: "{app}"; Permissions: users-modify
+
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
