@@ -46,17 +46,16 @@ from fake_lingoes.utils.path_helper import get_resource_path
 
 
 # Monitor
+# Monitor
 if platform.system() == "Windows":
     monitor_info = GetMonitorInfo(MonitorFromPoint((0,0)))
     work_area = monitor_info.get("Work")
     heightMonitor = work_area[3]
     widthMonitor = work_area[2]
 else:
-    # Cross-platform monitor info using PyQt
-    desktop = QApplication.desktop()
-    screen_rect = desktop.availableGeometry()
-    heightMonitor = screen_rect.height()
-    widthMonitor = screen_rect.width()
+    # Linux/other: Use defaults, will be updated in TranslateMainWindow.__init__
+    heightMonitor = 1080 
+    widthMonitor = 1920
 
 # Support language
 myLangDict = {
@@ -139,6 +138,7 @@ class TranslateMainWindow(QWidget):
 
 
 		### WINDOW Start Setting
+		self.update_monitor_info()
 		#Window (title, Icon, size...):
 		self.setWindowTitle("Fake Lingoes-UI")
 		# self.setMouseTracking(True)
@@ -454,6 +454,21 @@ class TranslateMainWindow(QWidget):
 		self.wincap = CaptureWindow()
 		self.wincap.hide()
 	
+	def update_monitor_info(self):
+		global heightMonitor, widthMonitor
+		if platform.system() == "Windows":
+			monitor_info = GetMonitorInfo(MonitorFromPoint((0,0)))
+			work_area = monitor_info.get("Work")
+			heightMonitor = work_area[3]
+			widthMonitor = work_area[2]
+		else:
+			# Cross-platform monitor info using PyQt
+			desktop = QApplication.desktop()
+			if desktop:
+				screen_rect = desktop.availableGeometry()
+				heightMonitor = screen_rect.height()
+				widthMonitor = screen_rect.width()
+
 	# Group1: Function when start and reaction wiht mainwindow
 	# Start
 	# Drag Move lessFrame
@@ -731,7 +746,7 @@ class TranslateMainWindow(QWidget):
 			if text == "" or text == False:
 				mytext = str(self.inputBox.toPlainText()).lower()
 
-				mytext2 = re.sub("^\s+|\s+$", "", mytext, flags=re.UNICODE)
+				mytext2 = re.sub(r"^\s+|\s+$", "", mytext, flags=re.UNICODE)
 			
 			if mytext2 in myLingoesListWords:
 				self.outputBox.setHtml(lingoesDic[mytext2])
@@ -773,7 +788,7 @@ class TranslateMainWindow(QWidget):
 			if text == "" or text == False:
 				mytext = str(self.inputBox.toPlainText()).lower()
 				# " ".join(mytext.split())
-				mytext = re.sub("^\s+|\s+$", "", mytext, flags=re.UNICODE)
+				mytext = re.sub(r"^\s+|\s+$", "", mytext, flags=re.UNICODE)
 			
 			if mytext in myLingoesListWords:
 				self.outputBox.setHtml(lingoesDic[mytext])
@@ -901,7 +916,7 @@ class TranslateMainWindow(QWidget):
 			self.inputBox.hide()
 			self.inputBoxRaw.show()
 			mytext = (self.inputBox.toPlainText()).lower()
-			mytext2 = re.sub("^\s+|\s+$", "", mytext, flags=re.UNICODE)
+			mytext2 = re.sub(r"^\s+|\s+$", "", mytext, flags=re.UNICODE)
 			if(mytext2 in myLingoesListWords):
 				self.setFixedSize(400, 200)
 				self.outputBox.setFont(self.outputFont3)

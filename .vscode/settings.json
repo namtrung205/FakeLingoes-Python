@@ -1,0 +1,7 @@
+{
+    "python.defaultInterpreterPath": "venv_win\\Scripts\\python.exe",
+    "python.analysis.extraPaths": [
+        "./src"
+    ],
+    "python.terminal.activateEnvironment": true
+}
