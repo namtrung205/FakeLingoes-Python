@@ -9,4 +9,5 @@ Tempfile/
 Capture/
 build_tmp
 Release
-Capture
+Capture/
+installer_output/
