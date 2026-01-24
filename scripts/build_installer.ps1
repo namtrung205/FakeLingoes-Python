@@ -10,9 +10,13 @@ Write-Host "--- Step 1: Running PyInstaller ---" -ForegroundColor Cyan
 
 $pyinstallerPath = ""
 $localVenvPath = Join-Path $currentDir "venv\Scripts\pyinstaller.exe"
+$localVenvWinPath = Join-Path $currentDir "venv_win\Scripts\pyinstaller.exe"
 
 if (Get-Command pyinstaller -ErrorAction SilentlyContinue) {
     $pyinstallerPath = "pyinstaller"
+} elseif (Test-Path $localVenvWinPath) {
+    Write-Host "Found PyInstaller in local venv_win: $localVenvWinPath" -ForegroundColor Yellow
+    $pyinstallerPath = $localVenvWinPath
 } elseif (Test-Path $localVenvPath) {
     Write-Host "Found PyInstaller in local venv: $localVenvPath" -ForegroundColor Yellow
     $pyinstallerPath = $localVenvPath
@@ -21,7 +25,7 @@ if (Get-Command pyinstaller -ErrorAction SilentlyContinue) {
 if ($pyinstallerPath) {
     & $pyinstallerPath --noconfirm "$specFilePath"
 } else {
-    Write-Error "PyInstaller not found in PATH or 'venv\Scripts'. Please install it using 'pip install pyinstaller'."
+    Write-Error "PyInstaller not found in PATH, 'venv_win\Scripts', or 'venv\Scripts'. Please install it using 'pip install pyinstaller'."
 }
 
 # 2. Check for ISCC.exe
