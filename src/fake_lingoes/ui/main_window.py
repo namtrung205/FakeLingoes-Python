@@ -841,7 +841,7 @@ class TranslateMainWindow(QWidget):
 		if str(self.inputBox.toPlainText()).count(".") > 2 or str(self.inputBox.toPlainText()).count(" ") > 30:
 			os.startfile(self.myPathMp3)
 		else:
-			playsound.playsound(self.myPathMp3)
+			playsound.playsound(os.path.abspath(self.myPathMp3))
 		self.functionFinished()
 
 
