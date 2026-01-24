@@ -12,7 +12,7 @@ import psutil
 import os
 import platform
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import QAbstractNativeEventFilter, QAbstractEventDispatcher
+from PyQt5.QtCore import Qt, QAbstractNativeEventFilter, QAbstractEventDispatcher
 
 from PyQt5.QtWidgets import qApp, QApplication, QMessageBox
 
@@ -44,6 +44,10 @@ if __name__ == '__main__':
     # Create directories relative to current working directory
     os.makedirs('Tempfile', exist_ok=True)
     os.makedirs('Capture', exist_ok=True)
+    
+    # Enable High DPI scaling
+    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
+    QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
     
     app = QApplication(sys.argv)
     try:
