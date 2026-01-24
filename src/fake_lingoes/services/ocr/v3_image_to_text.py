@@ -21,9 +21,26 @@ def ImageToText(image=os.path.join("Capture", "capture.png")):
 		imgContrastE.save(output_path)
 
 		imgModified = Image.open(output_path)
-		# NOTE: This path is hardcoded for Windows x86/x64 systems. 
-		# In a real app, this should be configurable or bundled.
-		pytesseract.tesseract_cmd = r'C:\Program Files (x86)\Tesseract-OCR\tesseract.exe'
+		
+		# Proactively find Tesseract path
+		tesseract_paths = [
+			r'C:\Program Files\Tesseract-OCR\tesseract.exe',
+			r'C:\Program Files (x86)\Tesseract-OCR\tesseract.exe',
+			os.path.join(os.environ.get("ProgramFiles", "C:\\Program Files"), "Tesseract-OCR", "tesseract.exe"),
+			os.path.join(os.environ.get("ProgramFiles(x86)", "C:\\Program Files (x86)"), "Tesseract-OCR", "tesseract.exe"),
+		]
+		
+		found_path = None
+		for path in tesseract_paths:
+			if os.path.exists(path):
+				found_path = path
+				break
+		
+		if found_path:
+			pytesseract.tesseract_cmd = found_path
+		else:
+			# Fallback or error handling if not found
+			print("Warning: Tesseract-OCR not found in standard paths.")
 
 		text = image_to_string(imgModified)
 		print(text)

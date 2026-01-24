@@ -11,3 +11,4 @@ build_tmp
 Release
 Capture/
 installer_output/
+/.vs
