@@ -15,8 +15,8 @@ from PyQt5.QtCore import QAbstractNativeEventFilter, QAbstractEventDispatcher
 
 from PyQt5.QtWidgets import qApp, QApplication, QMessageBox
 
-from UIMainWindow import TranslateMainWindow
-
+from fake_lingoes.ui.main_window import TranslateMainWindow
+from fake_lingoes.utils.path_helper import get_resource_path
 
 from pyqtkeybind import keybinder
 
@@ -29,21 +29,18 @@ class WinEventFilter(QAbstractNativeEventFilter):
         ret = self.keybinder.handler(eventType, message)
         return ret, 0
 
-
-
 if __name__ == '__main__':
     # Put follow line to compile with pyinstaller
     freeze_support()
 
-    os.makedirs('.\\Tempfile', exist_ok = True)
-    os.makedirs('.\\Capture', exist_ok = True)
-    # app.setWindowIcon(QIcon('Icon.ico'))
-    # Set style
+    # Create directories relative to current working directory
+    os.makedirs('Tempfile', exist_ok=True)
+    os.makedirs('Capture', exist_ok=True)
+    
     app = QApplication(sys.argv)
     try:
         mySettingDict = {
             "Time_out":10,
-
             "quit":"Shift+Ctrl+Q",
             "transClipboard":"Alt+Q",
             "alwaysTop":"Alt+A",
@@ -53,23 +50,21 @@ if __name__ == '__main__':
             "Expand":"Alt+E",
             "F5Dic":"Alt+R",
             "Show":"Alt+S",
-
             "SpaceOCR_apiKey": None,
-
             "Oxford_appID" : None,
             "Oxford_appKey" : None,
-
         }
-        with open(".\Configuration\\configuration.cfg") as fileConfig:
-            for line in fileConfig:
-                if line.count("|") ==2:
-                    listLine = line.split("|")
-                    mySettingDict[str(listLine[0])] = str(listLine[1])
-                else:
-                    pass
-        mySettingtupple =(
+        
+        config_path = get_resource_path(os.path.join("Configuration", "configuration.cfg"))
+        if os.path.exists(config_path):
+            with open(config_path) as fileConfig:
+                for line in fileConfig:
+                    if line.count("|") == 2:
+                        listLine = line.split("|")
+                        mySettingDict[str(listLine[0])] = str(listLine[1])
+        
+        mySettingtupple = (
             int(mySettingDict["Time_out"]),
-
             mySettingDict["quit"],
             mySettingDict["alwaysTop"],
             mySettingDict["transClipboard"],
@@ -79,28 +74,25 @@ if __name__ == '__main__':
             mySettingDict["Expand"],
             mySettingDict["F5Dic"],
             mySettingDict["Show"],
-
-
             mySettingDict["SpaceOCR_apiKey"],
-
             mySettingDict["Oxford_appID"],
             mySettingDict["Oxford_appKey"],
-
         )
-
-
-
         print(mySettingtupple)
-    except:
-        print("Using default setting")
+    except Exception as e:
+        print(f"Using default setting due to: {e}")
 
     try:
-        fileStyle = open(".\Resources\\Styles\\styleWindow.css").read()
-        app.setStyleSheet(fileStyle)
-    except:
-        print("Using default style")
+        style_path = get_resource_path(os.path.join("Resources", "Styles", "styleWindow.css"))
+        if os.path.exists(style_path):
+            fileStyle = open(style_path).read()
+            app.setStyleSheet(fileStyle)
+        else:
+            print(f"Style file not found at: {style_path}")
+    except Exception as e:
+        print(f"Using default style due to: {e}")
 
-    tempFolder = ".\\Tempfile"
+    tempFolder = "Tempfile"
     # Delete all tempfile
     for the_file in os.listdir(tempFolder):
         file_path = os.path.join(tempFolder, the_file)

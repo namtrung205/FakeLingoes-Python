@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import (QStyleOptionComboBox, QDialog, QFileDialog, QGridLa
 
 import os
 
-from myStranslator import *
+from fake_lingoes.services.translation.translator import googleTrans
 
 from gtts import gTTS
 from gtts.tts import gTTSError
@@ -23,13 +23,11 @@ import time
 from win32api import GetMonitorInfo, MonitorFromPoint
 
 
-from OxFordAPI import OxFordDic, WordNotFound
-
-from SoHoaDict import SoHoaDic
-
-from customeWidgets import *
-
-from myTimers import myTimer
+from fake_lingoes.services.dictionary.oxford_api import OxFordDic, WordNotFound
+from fake_lingoes.services.dictionary.sohoa_dict import SoHoaDic
+from fake_lingoes.ui.widgets import myIconButton
+from fake_lingoes.utils.timers import myTimer
+from fake_lingoes.utils.path_helper import get_resource_path
 
 
 
@@ -167,7 +165,7 @@ class MeaningWindow(QWidget):
 
 		self.addToDbButton = myIconButton()
 		iconaddToDb = QIcon()
-		iconaddToDb.addPixmap(QPixmap(".\\Resources\\Images\\import.png"))
+		iconaddToDb.addPixmap(QPixmap(get_resource_path("Resources/Images/import.png")))
 		self.addToDbButton.setFlat(True)
 		self.addToDbButton.setIcon(iconaddToDb)
 		self.addToDbButton.setIconSize(QSize(20,20))
@@ -176,7 +174,7 @@ class MeaningWindow(QWidget):
 
 		self.refeshMeaningButton = myIconButton()
 		iconfreshMean = QIcon()
-		iconfreshMean.addPixmap(QPixmap(".\\Resources\\Images\\refresh.png"))
+		iconfreshMean.addPixmap(QPixmap(get_resource_path("Resources/Images/refresh.png")))
 		self.refeshMeaningButton.setFlat(True)
 		self.refeshMeaningButton.setIcon(iconfreshMean)
 		self.refeshMeaningButton.setIconSize(QSize(20,20))
@@ -186,7 +184,7 @@ class MeaningWindow(QWidget):
 		self.transMeaningButton = myIconButton()
 		self.transMeaningButton.hide()
 		icontransMean = QIcon()
-		icontransMean.addPixmap(QPixmap(".\\Resources\\Images\\transMeaning.png"))
+		icontransMean.addPixmap(QPixmap(get_resource_path("Resources/Images/transMeaning.png")))
 		self.transMeaningButton.setFlat(True)
 		self.transMeaningButton.setIcon(icontransMean)
 		self.transMeaningButton.setIconSize(QSize(20,20))

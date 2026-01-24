@@ -8,12 +8,12 @@ from PyQt5.QtWidgets import (QDialog, QFileDialog, QGridLayout, QHBoxLayout, QMe
 		QWidget, QShortcut, QApplication,QSystemTrayIcon,QStyle,QAction,qApp, QMenu, QDesktopWidget, QTabWidget, QDoubleSpinBox)
 
 import os
-from PIL import ImageGrab
 import time
-
-from PIL import Image
+from PIL import ImageGrab, Image
 from pytesseract import image_to_string
-from customeWidgets import *
+
+from fake_lingoes.ui.widgets import myIconButton
+from fake_lingoes.utils.path_helper import get_resource_path
 # Incon
 
 class CaptureWindow(QtWidgets.QWidget):
@@ -31,7 +31,7 @@ class CaptureWindow(QtWidgets.QWidget):
         # self.capButton = myIconButton()
         # self.capButton.setParent(self)
         iconTrans = QIcon()
-        iconTrans.addPixmap(QPixmap(".\Resources\\Images\\camera.png"))
+        iconTrans.addPixmap(QPixmap(get_resource_path("Resources/Images/camera.png")))
         # self.capButton.setFlat(True)
         self.capButton.setIcon(iconTrans)
         self.capButton.setIconSize(QSize(30,30))
@@ -65,7 +65,7 @@ class CaptureWindow(QtWidgets.QWidget):
         img = ImageGrab.grab(bbox=window)
         # img2 = ImageGrab.grabclipboard
         # print(img)
-        img.save(".\Capture\\capture.png")
+        img.save(os.path.join("Capture", "capture.png"))
 
 
 
@@ -126,7 +126,7 @@ class MainWindow(QtWidgets.QWidget):
         self.captureAreaButton = myIconButton()
         self.captureAreaButton.setParent(self)
         selectAreaIcon = QIcon()
-        selectAreaIcon.addPixmap(QPixmap(".\\Resources\\Images\\SelectArea.png"))
+        selectAreaIcon.addPixmap(QPixmap(get_resource_path("Resources/Images/SelectArea.png")))
         self.captureAreaButton.setFlat(True)
         self.captureAreaButton.setIcon(selectAreaIcon)
         self.captureAreaButton.setIconSize(QSize(20,20))

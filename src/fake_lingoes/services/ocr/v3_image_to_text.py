@@ -1,14 +1,12 @@
-# -*- coding: utf-8 -*-
+import os
 from PIL import Image, ImageEnhance
 from pytesseract import image_to_string, pytesseract
 
+from fake_lingoes.services.ocr.orc_space_lib import OCRSpace
 
-from orcSpaceLib import OCRSpace
-
-def ImageToText(image=".\Capture\\capture.png"):
+def ImageToText(image=os.path.join("Capture", "capture.png")):
 	try:
 		imgOriginal = Image.open(image)
-
 
 		imgColor = ImageEnhance.Color(imgOriginal)
 		imgColorE = imgColor.enhance(0)
@@ -16,16 +14,16 @@ def ImageToText(image=".\Capture\\capture.png"):
 		imgSharpe = ImageEnhance.Sharpness(imgColorE)
 		imgSharpeE = imgSharpe.enhance(1.75)
 
-
-
 		imgContrast = ImageEnhance.Contrast(imgSharpeE)
 		imgContrastE = imgContrast.enhance(5)
 
-		imgContrastE.save(".\Capture\\capture2.png")
+		output_path = os.path.join("Capture", "capture2.png")
+		imgContrastE.save(output_path)
 
-		imgModified = Image.open(".\Capture\\capture2.png")
-		pytesseract.tesseract_cmd = 'C:\\Program Files (x86)\\Tesseract-OCR\\tesseract.exe'
-
+		imgModified = Image.open(output_path)
+		# NOTE: This path is hardcoded for Windows x86/x64 systems. 
+		# In a real app, this should be configurable or bundled.
+		pytesseract.tesseract_cmd = r'C:\Program Files (x86)\Tesseract-OCR\tesseract.exe'
 
 		text = image_to_string(imgModified)
 		print(text)
@@ -33,7 +31,7 @@ def ImageToText(image=".\Capture\\capture.png"):
 	except Exception as e:
 		print("Error:" + str(e))
 
-def ImageToText_Api(api_key, image=".\Capture\\capture.png"):
+def ImageToText_Api(api_key, image=os.path.join("Capture", "capture.png")):
 	try:
 		imgOriginal = Image.open(image)
 
@@ -46,11 +44,12 @@ def ImageToText_Api(api_key, image=".\Capture\\capture.png"):
 		imgContrast = ImageEnhance.Contrast(imgSharpeE)
 		imgContrastE = imgContrast.enhance(1)
 
-		imgContrastE.save(".\Capture\\capture2.png")
+		output_path = os.path.join("Capture", "capture2.png")
+		imgContrastE.save(output_path)
 
 		# Set your APi key
 		myOrc_Api = OCRSpace(api_key)
-		return myOrc_Api.ocr_file(".\Capture\\capture2.png")
+		return myOrc_Api.ocr_file(output_path)
 	except Exception as e:
 		print("Error:" + str(e))
 

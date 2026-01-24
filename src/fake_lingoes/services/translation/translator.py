@@ -20,4 +20,3 @@ def googleTrans(myText,fromLang='en', toLang='vi'):
 			print("Error googletrans 1")
 	return outText
 
-googleTrans("day to day")

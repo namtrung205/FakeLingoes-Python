@@ -3,17 +3,25 @@
 block_cipher = None
 
 
-a = Analysis(['MainApp.py'],
-             pathex=['E:\\DEV\\02. Fake lingoes and ocr\\V5.4'],
+a = Analysis(['src/fake_lingoes/main.py'],
+             pathex=['.'],
              binaries=[],
-             datas=[],
-             hiddenimports = [
-    'pyttsx3.drivers',
-    'pyttsx3.drivers.dummy',
-    'pyttsx3.drivers.espeak',
-    'pyttsx3.drivers.nsss',
-    'pyttsx3.drivers.sapi5',
-],
+             datas=[
+                 ('Resources', 'Resources'),
+                 ('Configuration', 'Configuration'),
+                 ('icon.ico', '.')
+             ],
+             hiddenimports=[
+                'pyttsx3.drivers',
+                'pyttsx3.drivers.dummy',
+                'pyttsx3.drivers.espeak',
+                'pyttsx3.drivers.nsss',
+                'pyttsx3.drivers.sapi5',
+                'fake_lingoes',
+                'fake_lingoes.ui',
+                'fake_lingoes.services',
+                'fake_lingoes.utils'
+             ],
              hookspath=[],
              runtime_hooks=[],
              excludes=[],
@@ -29,10 +37,11 @@ exe = EXE(pyz,
           a.zipfiles,
           a.datas,
           [],
-          name='MainApp',
+          name='Fake Lingoes',
           debug=False,
           bootloader_ignore_signals=False,
           strip=False,
           upx=True,
           runtime_tmpdir=None,
-          console=False , icon='icon.ico')
+          console=False,
+          icon='icon.ico')

@@ -8,14 +8,13 @@ from PyQt5.QtWidgets import (QDialog, QFileDialog, QGridLayout, QHBoxLayout, QMe
 		QWidget, QShortcut, QCompleter,QApplication,QSystemTrayIcon,QStyle,QAction,qApp, QMenu, QDesktopWidget, QTabWidget, QDoubleSpinBox)
 
 # Local
-from MeaningWindow import *
-from customeWidgets import *
-from myStranslator import *
-from V3WindowSelection import *
-from V3Image2Text import *
-
-from Speak import *
-# from ImportToDatabase import *
+from fake_lingoes.ui.meaning_window import MeaningWindow
+from fake_lingoes.ui.widgets import myIconButton, myTextEdit
+from fake_lingoes.services.translation.translator import googleTrans
+from fake_lingoes.ui.window_selection import CaptureWindow
+from fake_lingoes.services.ocr.v3_image_to_text import ImageToText, ImageToText_Api
+from fake_lingoes.services.audio.speak import *
+# from fake_lingoes.services.dictionary.import_to_database import *
 
 #  Pip pypi
 from gtts import gTTS
@@ -39,7 +38,8 @@ import win32con
 # Win7 no comment bellow line
 # ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
-from myTimers import myTimer
+from fake_lingoes.utils.timers import myTimer
+from fake_lingoes.utils.path_helper import get_resource_path
 
 
 # Monitor
@@ -58,21 +58,24 @@ myLangDict = {
 
 # E:\DEV\02. Fake lingoes and ocr\V5.4\Resources\Dictionaries\English_Vietnamese_Dic.txt
 # Impoert tu dien vao trong 
+# Load Dictionary
 lingoesDic = {}
 
-# Open file
+relative_path = "Resources/Dictionaries/English_Vietnamese_Dic.txt"
+full_path = get_resource_path(relative_path)
 
-relative_path = "./Resources/Dictionaries/English_Vietnamese_Dic.txt"
-full_path = os.path.abspath(relative_path)
-
-LingoesDicTxt = open(full_path, 'r', encoding="utf-8")
-
-for line in LingoesDicTxt:
-	listWordLine = list(str(line).split("|"))
-	lingoesDic[str(listWordLine[1])] = listWordLine[2]
+if os.path.exists(full_path):
+    with open(full_path, 'r', encoding="utf-8") as LingoesDicTxt:
+        for line in LingoesDicTxt:
+            listWordLine = list(str(line).split("|"))
+            if len(listWordLine) >= 3:
+                lingoesDic[str(listWordLine[1])] = listWordLine[2]
+else:
+    print(f"Dictionary file not found at: {full_path}")
 
 myLingoesListWords = lingoesDic.keys()
 
+from PyQt5 import QtCore
 lingoesModel = QtCore.QStringListModel()
 lingoesModel.setStringList(myLingoesListWords)
 
@@ -129,7 +132,7 @@ class TranslateMainWindow(QWidget):
 		#Window (title, Icon, size...):
 		self.setWindowTitle("Fake Lingoes-UI")
 		# self.setMouseTracking(True)
-		self.setWindowIcon(QIcon("icon.ico"))		
+		self.setWindowIcon(QIcon(get_resource_path("icon.ico")))
 		self.setWindowOpacity(0.9)
 		self.setFixedSize(400,150)
 		self.center()
@@ -159,7 +162,7 @@ class TranslateMainWindow(QWidget):
 
 
 		##System Tray Icon
-		self.trayIcon = QIcon(QPixmap('icon.ico'))
+		self.trayIcon = QIcon(QPixmap(get_resource_path('icon.ico')))
 		self.tray_icon = QSystemTrayIcon(self)
 		self.tray_icon.showMessage("QString title", "QString msg",QSystemTrayIcon.Information,2000)
 		self.tray_icon.setIcon(self.trayIcon)
@@ -222,7 +225,7 @@ class TranslateMainWindow(QWidget):
 
 		self.captureAreaButton = myIconButton()
 		selectAreaIcon = QIcon()
-		selectAreaIcon.addPixmap(QPixmap(".\\Resources\\Images\\SelectArea.png"))
+		selectAreaIcon.addPixmap(QPixmap(get_resource_path("Resources/Images/SelectArea.png")))
 		self.captureAreaButton.setFlat(True)
 		self.captureAreaButton.setIcon(selectAreaIcon)
 		self.captureAreaButton.setIconSize(QSize(16,16))
@@ -232,7 +235,7 @@ class TranslateMainWindow(QWidget):
 
 		self.captureApiButton = myIconButton()
 		selectAreaApiIcon = QIcon()
-		selectAreaApiIcon.addPixmap(QPixmap(".\\Resources\\Images\\claroreadcloud.png"))
+		selectAreaApiIcon.addPixmap(QPixmap(get_resource_path("Resources/Images/claroreadcloud.png")))
 		self.captureApiButton.setFlat(True)
 		self.captureApiButton.setIcon(selectAreaApiIcon)
 		self.captureApiButton.setIconSize(QSize(20,20))
@@ -270,7 +273,7 @@ class TranslateMainWindow(QWidget):
 
 		self.transButton = myIconButton()
 		iconTrans = QIcon()
-		iconTrans.addPixmap(QPixmap(".\\Resources\\Images\\trans.png"))
+		iconTrans.addPixmap(QPixmap(get_resource_path("Resources/Images/trans.png")))
 		self.transButton.setFlat(True)
 		self.transButton.setIcon(iconTrans)
 		self.transButton.setIconSize(QSize(20,20))
@@ -283,12 +286,12 @@ class TranslateMainWindow(QWidget):
 		# Button Listen Mode
 		self.streamButton = myIconButton()
 		self.iconStreamG = QIcon()
-		self.iconStreamG.addPixmap(QPixmap(".\\Resources\\Images\\StreamMusicG.png"))
+		self.iconStreamG.addPixmap(QPixmap(get_resource_path("Resources/Images/StreamMusicG.png")))
 		self.streamButton.setFlat(True)
 		self.streamMode = "G"
 		
 		self.iconStreamM = QIcon()
-		self.iconStreamM.addPixmap(QPixmap(".\\Resources\\Images\\StreamMusicM.png"))
+		self.iconStreamM.addPixmap(QPixmap(get_resource_path("Resources/Images/StreamMusicM.png")))
 		self.streamButton.setFlat(True)
 
 		self.streamButton.setIcon(self.iconStreamG)
@@ -300,7 +303,7 @@ class TranslateMainWindow(QWidget):
 		# Button Listen
 		self.listenButton = myIconButton()
 		iconListen = QIcon()
-		iconListen.addPixmap(QPixmap(".\\Resources\\Images\\Listen.png"))
+		iconListen.addPixmap(QPixmap(get_resource_path("Resources/Images/Listen.png")))
 		self.listenButton.setFlat(True)
 		self.listenButton.setIcon(iconListen)
 		self.listenButton.setIconSize(QSize(20,20))
@@ -319,7 +322,7 @@ class TranslateMainWindow(QWidget):
 		# Button large
 		self.largeButton = myIconButton()
 		iconLarge = QIcon()
-		iconLarge.addPixmap(QPixmap(".\\Resources\\Images\\large.png"))
+		iconLarge.addPixmap(QPixmap(get_resource_path("Resources/Images/large.png")))
 		self.largeButton.setFlat(True)
 		self.largeButton.setIcon(iconLarge)
 		self.largeButton.setIconSize(QSize(20,20))
@@ -338,7 +341,7 @@ class TranslateMainWindow(QWidget):
 
 		self.swapButton = myIconButton()
 		iconSwap = QIcon()
-		iconSwap.addPixmap(QPixmap(".\\Resources\\Images\\swap.png"))
+		iconSwap.addPixmap(QPixmap(get_resource_path("Resources/Images/swap.png")))
 		self.swapButton.setFlat(True)
 		self.swapButton.setIcon(iconSwap)
 		self.swapButton.setIconSize(QSize(20,20))
@@ -360,7 +363,7 @@ class TranslateMainWindow(QWidget):
 
 		self.expandButton = myIconButton()
 		iconExpand = QIcon()
-		iconExpand.addPixmap(QPixmap(".\\Resources\\Images\\expand.png"))
+		iconExpand.addPixmap(QPixmap(get_resource_path("Resources/Images/expand.png")))
 		self.expandButton.setFlat(True)
 		self.expandButton.setIcon(iconExpand)
 		self.expandButton.setIconSize(QSize(16,16))
@@ -591,7 +594,8 @@ class TranslateMainWindow(QWidget):
 
 				self.show()
 
-				textFromImageApi = myTimer(ImageToText_Api, (self.SpaceOCR_apiKey, ".\Capture\\capture.png",), self.myTimeOutCap)
+				capture_img_path = os.path.join("Capture", "capture.png")
+				textFromImageApi = myTimer(ImageToText_Api, (self.SpaceOCR_apiKey, capture_img_path,), self.myTimeOutCap)
 
 				self.inputBox.setText(textFromImageApi)
 				self.transButton_Click()
@@ -799,7 +803,7 @@ class TranslateMainWindow(QWidget):
 		self.functionStart()
 		try:
 			# self.transButton_Click()
-			self.myPathMp3 = ".\\Tempfile\\myTts.mp3"
+			self.myPathMp3 = os.path.join("Tempfile", "myTts.mp3")
 			self.outTextChange(self.myPathMp3)
 			
 		except (AssertionError, AttributeError, gTTSError):
@@ -820,7 +824,7 @@ class TranslateMainWindow(QWidget):
 		except (NameError, PermissionError):
 			try:
 				self.fileCount+=1
-				self.myPathMp3 = ".\\Tempfile\\myTts" + str(self.fileCount)+".mp3"
+				self.myPathMp3 = os.path.join("Tempfile", f"myTts{self.fileCount}.mp3")
 				self.outTextChange(self.myPathMp3)
 			except:
 				if str(self.inputBox.toPlainText()).count(".") > 2 or str(self.inputBox.toPlainText()).count(" ") > 30:
