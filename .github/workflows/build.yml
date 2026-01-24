@@ -32,7 +32,7 @@ jobs:
         pyinstaller FakeLingoes.spec
 
     - name: Build Installer with Inno Setup
-      uses: tomodachi94/setup-innosetup@v1
+      uses: miniersoft/setup-innosetup@v1
       with:
         inno-version: 6.2.2
 
