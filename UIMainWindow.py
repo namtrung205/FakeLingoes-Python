@@ -61,7 +61,11 @@ myLangDict = {
 lingoesDic = {}
 
 # Open file
-LingoesDicTxt = open(".\Resources\Dictionaries\English_Vietnamese_Dic.txt", 'r', encoding="utf-8")
+
+relative_path = "./Resources/Dictionaries/English_Vietnamese_Dic.txt"
+full_path = os.path.abspath(relative_path)
+
+LingoesDicTxt = open(full_path, 'r', encoding="utf-8")
 
 for line in LingoesDicTxt:
 	listWordLine = list(str(line).split("|"))
