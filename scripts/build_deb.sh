@@ -25,12 +25,19 @@ rm -rf "$BUILD_DIR"
 rm -f "$DEB_NAME"
 
 # 2. Run PyInstaller (if dist doesn't exist or forced)
+# 2. Run PyInstaller (if dist doesn't exist or forced)
 if [ ! -d "$DIST_DIR" ]; then
     echo "Running PyInstaller..."
-    ./venv_linux/bin/pyinstaller --clean FakeLingoes.spec
+    # Check for venv pyinstaller, otherwise use global
+    if [ -f "./venv_linux/bin/pyinstaller" ]; then
+        PYINSTALLER_CMD="./venv_linux/bin/pyinstaller"
+    else
+        PYINSTALLER_CMD="pyinstaller"
+    fi
+    $PYINSTALLER_CMD --clean FakeLingoes.spec
 else
     echo "PyInstaller build found. Skipping rebuild to save time."
-    echo "Run './venv_linux/bin/pyinstaller --clean FakeLingoes.spec' manually if you changed code."
+    echo "Run 'pyinstaller --clean FakeLingoes.spec' manually if you changed code."
 fi
 
 # 3. Create Debian structure
@@ -63,7 +70,9 @@ EOF
 # 6. Convert and Install Icon
 echo "Converting icon..."
 # Use python to convert ico to png (requires pillow)
-source venv_linux/bin/activate
+if [ -f "venv_linux/bin/activate" ]; then
+    source venv_linux/bin/activate
+fi
 python3 -c "from PIL import Image; img = Image.open('icon.ico'); img.save('$BUILD_DIR/usr/share/icons/hicolor/256x256/apps/$APP_NAME.png')"
 
 # 7. Create Control File
