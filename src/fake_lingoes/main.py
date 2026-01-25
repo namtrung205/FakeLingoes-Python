@@ -38,6 +38,10 @@ class NativeEventFilter(QAbstractNativeEventFilter):
         return ret, 0
 
 if __name__ == '__main__':
+    # Force X11 platform on Linux to ensure hotkey compatibility (QX11Info)
+    if platform.system() == "Linux":
+        os.environ["QT_QPA_PLATFORM"] = "xcb"
+
     # Put follow line to compile with pyinstaller
     freeze_support()
 

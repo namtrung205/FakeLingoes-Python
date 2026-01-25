@@ -900,12 +900,9 @@ class TranslateMainWindow(QWidget):
 
 
 	def largeButton_Click(self):
+		self.update_monitor_info()
+		global heightMonitor, widthMonitor
 
-		monitor_info = GetMonitorInfo(MonitorFromPoint((0,0)))
-		work_area = monitor_info.get("Work")
-
-		heightMonitor = work_area[3]
-		widthMonitor = work_area[2]
 		if self.height() <=200:
 			self.inputBox.show()
 			self.inputBoxRaw.hide()

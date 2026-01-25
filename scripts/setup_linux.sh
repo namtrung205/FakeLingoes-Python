@@ -10,7 +10,8 @@ sudo apt install -y tesseract-ocr libasound2-dev espeak scrot python3-pip python
     libxcb-xinerama0 libxkbcommon-x11-0 libdbus-1-3 libxcb-icccm4 libxcb-image0 \
     libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xfixes0 \
     libxcb-shape0 libxcb-shm0 libxcb-sync1 libxcb-xkb1 libxcb-render0 \
-    libfontconfig1 libfreetype6 libx11-xcb1 libxfixes3 libxi6 libxrender1 \
+    libxcb-x11-0 libx11-xcb1 \
+    libfontconfig1 libfreetype6 libxfixes3 libxi6 libxrender1 \
     libsm6 libice6 libgl1
 
 # Create virtual environment if it doesn't exist

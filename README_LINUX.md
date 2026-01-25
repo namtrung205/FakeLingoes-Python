@@ -21,7 +21,7 @@ chmod +x scripts/setup_linux.sh
 ### 3. Kích hoạt môi trường và chạy app
 ```bash
 # Kích hoạt môi trường ảo (venv) vừa tạo
-source venv/bin/activate
+source venv_linux/bin/activate
 
 # Chạy ứng dụng
 python3 src/fake_lingoes/main.py
