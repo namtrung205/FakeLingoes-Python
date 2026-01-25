@@ -26,7 +26,7 @@ psutil==7.2.1
 pyinstaller==6.18.0
 pyinstaller-hooks-contrib==2026.0
 pypiwin32==223; sys_platform == 'win32'
-PyGObject==3.46.0
+PyGObject==3.46.0; sys_platform == 'linux'
 PyQt5==5.15.11
 PyQt5-Qt5==5.15.2
 PyQt5_sip==12.18.0
