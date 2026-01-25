@@ -1,4 +1,6 @@
 # -*- mode: python -*-
+import sys
+
 
 block_cipher = None
 
@@ -37,7 +39,7 @@ exe = EXE(pyz,
           a.zipfiles,
           a.datas,
           [],
-          name='Fake Lingoes',
+          name='fakelingoes',
           debug=False,
           bootloader_ignore_signals=False,
           strip=False,

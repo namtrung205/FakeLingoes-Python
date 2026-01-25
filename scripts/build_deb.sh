@@ -14,7 +14,7 @@ fi
 APP_NAME="fakelingoes"
 ARCH="amd64"
 BUILD_DIR="build_deb"
-DIST_DIR="dist/Fake Lingoes"
+DIST_DIR="dist/$APP_NAME"
 DEB_NAME="Installer/${APP_NAME}_${VERSION}_${ARCH}.deb"
 
 echo "=== Building FakeLingoes Debian Package ==="
@@ -60,7 +60,7 @@ Version=1.0
 Type=Application
 Name=Fake Lingoes
 Comment=A simple dictionary and translation tool
-Exec=/opt/$APP_NAME/Fake\ Lingoes
+Exec=/opt/$APP_NAME/$APP_NAME
 Icon=$APP_NAME
 Terminal=false
 Categories=Utility;Education;

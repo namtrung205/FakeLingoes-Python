@@ -102,8 +102,8 @@ jobs:
     - name: Upload Windows Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: FakeLingoes_Setup_${{ env.VERSION }}
-        path: Installer/installer_output/FakeLingoes_Setup_${{ env.VERSION }}.exe
+        name: fakelingoes_setup_${{ env.VERSION }}
+        path: Installer/installer_output/fakelingoes_setup_${{ env.VERSION }}.exe
 
   build-linux:
     needs: prepare
@@ -166,7 +166,7 @@ jobs:
         tag_name: v${{ needs.prepare.outputs.version }}
         name: Release v${{ needs.prepare.outputs.version }}
         files: |
-          artifacts/FakeLingoes_Setup_${{ needs.prepare.outputs.version }}/*.exe
+          artifacts/fakelingoes_setup_${{ needs.prepare.outputs.version }}/*.exe
           artifacts/fakelingoes_${{ needs.prepare.outputs.version }}_amd64.deb/*.deb
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
