@@ -15,8 +15,8 @@ if %errorlevel% neq 0 (
 )
 
 echo [1/4] Creating virtual environment...
-if not exist venv (
-    python -m venv venv
+if not exist venv_win (
+    python -m venv venv_win
     if !errorlevel! neq 0 (
         echo [ERROR] Failed to create virtual environment.
         pause
@@ -28,11 +28,11 @@ if not exist venv (
 )
 
 echo [2/4] Upgrading pip, setuptools, and wheel...
-.\venv\Scripts\python.exe -m pip install --upgrade pip setuptools wheel
+.\venv_win\Scripts\python.exe -m pip install --upgrade pip setuptools wheel
 
 echo [3/4] Installing dependencies from requirements.txt...
 if exist requirements.txt (
-    .\venv\Scripts\pip install -r requirements.txt
+    .\venv_win\Scripts\pip install -r requirements.txt
     if !errorlevel! neq 0 (
         echo [ERROR] Failed to install dependencies.
         pause
@@ -44,13 +44,13 @@ if exist requirements.txt (
 )
 
 echo [4/4] Creating project structure markers...
-.\venv\Scripts\python.exe -c "import os; paths=['src/__init__.py', 'src/fake_lingoes/__init__.py', 'src/fake_lingoes/ui/__init__.py', 'src/fake_lingoes/services/__init__.py', 'src/fake_lingoes/services/ocr/__init__.py', 'src/fake_lingoes/services/dictionary/__init__.py', 'src/fake_lingoes/services/audio/__init__.py', 'src/fake_lingoes/services/translation/__init__.py', 'src/fake_lingoes/utils/__init__.py']; [open(p, 'a').close() for p in paths if not os.path.exists(p)]"
+.\venv_win\Scripts\python.exe -c "import os; paths=['src/__init__.py', 'src/fake_lingoes/__init__.py', 'src/fake_lingoes/ui/__init__.py', 'src/fake_lingoes/services/__init__.py', 'src/fake_lingoes/services/ocr/__init__.py', 'src/fake_lingoes/services/dictionary/__init__.py', 'src/fake_lingoes/services/audio/__init__.py', 'src/fake_lingoes/services/translation/__init__.py', 'src/fake_lingoes/utils/__init__.py']; [open(p, 'a').close() for p in paths if not os.path.exists(p)]"
 
 echo ======================================================
 echo    Setup completed successfully!
 echo ======================================================
 echo To start debugging, open the project in VS Code and press F5.
-echo To build the EXE, run: .\venv\Scripts\pyinstaller FakeLingoes.spec
+echo To build the EXE, run: .\venv_win\Scripts\pyinstaller FakeLingoes.spec
 echo ======================================================
 
 pause

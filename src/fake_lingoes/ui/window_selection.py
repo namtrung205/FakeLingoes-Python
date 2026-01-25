@@ -61,11 +61,20 @@ class CaptureWindow(QtWidgets.QWidget):
         # return (self.a)
 
 
-    def capture(self,window):
-        img = ImageGrab.grab(bbox=window)
-        # img2 = ImageGrab.grabclipboard
-        # print(img)
-        img.save(os.path.join("Capture", "capture.png"))
+    def capture(self, window):
+        # window = (x1, y1, x2, y2)
+        x = window[0]
+        y = window[1]
+        w = window[2] - window[0]
+        h = window[3] - window[1]
+
+        # Use PyQt's QScreen to capture the screen area (more robust on Linux/Wayland)
+        screen = QApplication.primaryScreen()
+        screenshot = screen.grabWindow(0, x, y, w, h)
+        
+        capture_dir = "Capture"
+        os.makedirs(capture_dir, exist_ok=True)
+        screenshot.save(os.path.join(capture_dir, "capture.png"), "png")
 
 
 

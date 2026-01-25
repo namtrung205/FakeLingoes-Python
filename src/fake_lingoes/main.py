@@ -10,8 +10,9 @@ import time
 import psutil    
 
 import os
+import platform
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import QAbstractNativeEventFilter, QAbstractEventDispatcher
+from PyQt5.QtCore import Qt, QAbstractNativeEventFilter, QAbstractEventDispatcher
 
 from PyQt5.QtWidgets import qApp, QApplication, QMessageBox
 
@@ -27,7 +28,7 @@ from fake_lingoes import __version__
 
 from pyqtkeybind import keybinder
 
-class WinEventFilter(QAbstractNativeEventFilter):
+class NativeEventFilter(QAbstractNativeEventFilter):
     def __init__(self, keybinder):
         self.keybinder = keybinder
         super().__init__()
@@ -37,6 +38,10 @@ class WinEventFilter(QAbstractNativeEventFilter):
         return ret, 0
 
 if __name__ == '__main__':
+    # Force X11 platform on Linux to ensure hotkey compatibility (QX11Info)
+    if platform.system() == "Linux":
+        os.environ["QT_QPA_PLATFORM"] = "xcb"
+
     # Put follow line to compile with pyinstaller
     freeze_support()
 
@@ -44,7 +49,13 @@ if __name__ == '__main__':
     os.makedirs('Tempfile', exist_ok=True)
     os.makedirs('Capture', exist_ok=True)
     
+    # Enable High DPI scaling
+    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
+    QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
+    
     app = QApplication(sys.argv)
+    # Prevent app from exiting when window is hidden (minimize to tray)
+    app.setQuitOnLastWindowClosed(False)
     try:
         mySettingDict = {
             "Time_out":10,
@@ -160,27 +171,25 @@ if __name__ == '__main__':
     keybinder.register_hotkey(windowMain.winId(), mySettingtupple[9], windowMain.showOrHide)
 
     # Install a native event filter to receive events from the OS
-    win_event_filter = WinEventFilter(keybinder)
+    native_event_filter = NativeEventFilter(keybinder)
     event_dispatcher = QAbstractEventDispatcher.instance()
-    event_dispatcher.installNativeEventFilter(win_event_filter)
+    event_dispatcher.installNativeEventFilter(native_event_filter)
 
     # Check FakeLingoes already running
     numFake = 0
-    for program in psutil.process_iter():
-        if str(program.name()) == "Fake Lingoes.exe":
-            numFake+=1
-    print(numFake)
-    if int(numFake) > 2:
-        # infoMess = QMessageBox(windowMain)
-        # infoMess.setIcon(QMessageBox.Information)
-        # infoMess.setText("Warning!!!")
-        # infoMess.setInformativeText("An App is running...")
-        # infoMess.setWindowTitle("Warning!!!")
-        # #infoMess.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
-        # infoMess.setDefaultButton(QMessageBox.Ok)
-
-        # infoMess.show()
-        # infoMess.buttonClicked.connect(exit)
+    process_names = ["Fake Lingoes.exe", "FakeLingoes", "python"]
+    for program in psutil.process_iter(['name']):
+        try:
+            if program.info['name'] in process_names:
+                # If python, check if it's our script (simplified for now)
+                numFake += 1
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            pass
+    
+    print(f"Number of instances found: {numFake}")
+    # On Linux, multiple python processes are common, so we might need a better check
+    # For now, we'll keep it simple or allow the user to manage instances on Linux
+    if platform.system() == "Windows" and int(numFake) > 2:
         exit()
 
         

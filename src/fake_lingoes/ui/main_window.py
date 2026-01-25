@@ -21,16 +21,19 @@ from gtts import gTTS
 from gtts.tts import gTTSError
 import playsound
 
-# Bulld-in
+# Build-in
 import os
 import time
 from multiprocessing import Pool, TimeoutError
 import re
-# pyWin32
-import ctypes
-from win32api import GetMonitorInfo, MonitorFromPoint
-from win32gui import SetWindowPos
-import win32con
+
+# Platform specifics
+import platform
+if platform.system() == "Windows":
+    import ctypes
+    from win32api import GetMonitorInfo, MonitorFromPoint
+    from win32gui import SetWindowPos
+    import win32con
 
 # Incon
 # myappid = 'mycompany.myproduct.subproduct.version' # arbitrary string
@@ -43,10 +46,16 @@ from fake_lingoes.utils.path_helper import get_resource_path
 
 
 # Monitor
-monitor_info = GetMonitorInfo(MonitorFromPoint((0,0)))
-work_area = monitor_info.get("Work")
-heightMonitor = work_area[3]
-widthMonitor = work_area[2]
+# Monitor
+if platform.system() == "Windows":
+    monitor_info = GetMonitorInfo(MonitorFromPoint((0,0)))
+    work_area = monitor_info.get("Work")
+    heightMonitor = work_area[3]
+    widthMonitor = work_area[2]
+else:
+    # Linux/other: Use defaults, will be updated in TranslateMainWindow.__init__
+    heightMonitor = 1080 
+    widthMonitor = 1920
 
 # Support language
 myLangDict = {
@@ -129,6 +138,7 @@ class TranslateMainWindow(QWidget):
 
 
 		### WINDOW Start Setting
+		self.update_monitor_info()
 		#Window (title, Icon, size...):
 		self.setWindowTitle("Fake Lingoes-UI")
 		# self.setMouseTracking(True)
@@ -444,6 +454,21 @@ class TranslateMainWindow(QWidget):
 		self.wincap = CaptureWindow()
 		self.wincap.hide()
 	
+	def update_monitor_info(self):
+		global heightMonitor, widthMonitor
+		if platform.system() == "Windows":
+			monitor_info = GetMonitorInfo(MonitorFromPoint((0,0)))
+			work_area = monitor_info.get("Work")
+			heightMonitor = work_area[3]
+			widthMonitor = work_area[2]
+		else:
+			# Cross-platform monitor info using PyQt
+			desktop = QApplication.desktop()
+			if desktop:
+				screen_rect = desktop.availableGeometry()
+				heightMonitor = screen_rect.height()
+				widthMonitor = screen_rect.width()
+
 	# Group1: Function when start and reaction wiht mainwindow
 	# Start
 	# Drag Move lessFrame
@@ -500,14 +525,16 @@ class TranslateMainWindow(QWidget):
 	def show2(self):
 		self.meaningdWindow.hide()
 
-		SetWindowPos(self.winId(),
-             win32con.HWND_TOPMOST, # = always on top. only reliable way to bring it to the front on windows
-             0, 0, 0, 0,
-             win32con.SWP_NOMOVE | win32con.SWP_NOSIZE | win32con.SWP_SHOWWINDOW)
-		SetWindowPos(self.winId(),
-             win32con.HWND_NOTOPMOST, # disable the always on top, but leave window at its top position
-             0, 0, 0, 0,
-             win32con.SWP_NOMOVE | win32con.SWP_NOSIZE | win32con.SWP_SHOWWINDOW)
+		if platform.system() == "Windows":
+			SetWindowPos(self.winId(),
+				 win32con.HWND_TOPMOST, # = always on top. only reliable way to bring it to the front on windows
+				 0, 0, 0, 0,
+				 win32con.SWP_NOMOVE | win32con.SWP_NOSIZE | win32con.SWP_SHOWWINDOW)
+			SetWindowPos(self.winId(),
+				 win32con.HWND_NOTOPMOST, # disable the always on top, but leave window at its top position
+				 0, 0, 0, 0,
+				 win32con.SWP_NOMOVE | win32con.SWP_NOSIZE | win32con.SWP_SHOWWINDOW)
+		
 		
 		self.raise_()
 		self.show()
@@ -719,7 +746,7 @@ class TranslateMainWindow(QWidget):
 			if text == "" or text == False:
 				mytext = str(self.inputBox.toPlainText()).lower()
 
-				mytext2 = re.sub("^\s+|\s+$", "", mytext, flags=re.UNICODE)
+				mytext2 = re.sub(r"^\s+|\s+$", "", mytext, flags=re.UNICODE)
 			
 			if mytext2 in myLingoesListWords:
 				self.outputBox.setHtml(lingoesDic[mytext2])
@@ -761,7 +788,7 @@ class TranslateMainWindow(QWidget):
 			if text == "" or text == False:
 				mytext = str(self.inputBox.toPlainText()).lower()
 				# " ".join(mytext.split())
-				mytext = re.sub("^\s+|\s+$", "", mytext, flags=re.UNICODE)
+				mytext = re.sub(r"^\s+|\s+$", "", mytext, flags=re.UNICODE)
 			
 			if mytext in myLingoesListWords:
 				self.outputBox.setHtml(lingoesDic[mytext])
@@ -835,11 +862,18 @@ class TranslateMainWindow(QWidget):
 					return None	
 		except Exception as e:
 			QMessageBox.information(self,'Information' ,"Error 3:" + str(e))
+			self.myPathMp3 = os.path.join("Tempfile", "myTts.mp3")
 			return None
 
 		# self.statusLabel.setText("Last time take: %s s" % str(round(time.time() - start_time, 2)))
 		if str(self.inputBox.toPlainText()).count(".") > 2 or str(self.inputBox.toPlainText()).count(" ") > 30:
-			os.startfile(self.myPathMp3)
+			import platform
+			if platform.system() == "Windows":
+				os.startfile(self.myPathMp3)
+			else:
+				# Linux/MacOS opener
+				import subprocess
+				subprocess.call(['xdg-open', self.myPathMp3])
 		else:
 			playsound.playsound(os.path.abspath(self.myPathMp3))
 		self.functionFinished()
@@ -873,12 +907,9 @@ class TranslateMainWindow(QWidget):
 
 
 	def largeButton_Click(self):
+		self.update_monitor_info()
+		global heightMonitor, widthMonitor
 
-		monitor_info = GetMonitorInfo(MonitorFromPoint((0,0)))
-		work_area = monitor_info.get("Work")
-
-		heightMonitor = work_area[3]
-		widthMonitor = work_area[2]
 		if self.height() <=200:
 			self.inputBox.show()
 			self.inputBoxRaw.hide()
@@ -889,7 +920,7 @@ class TranslateMainWindow(QWidget):
 			self.inputBox.hide()
 			self.inputBoxRaw.show()
 			mytext = (self.inputBox.toPlainText()).lower()
-			mytext2 = re.sub("^\s+|\s+$", "", mytext, flags=re.UNICODE)
+			mytext2 = re.sub(r"^\s+|\s+$", "", mytext, flags=re.UNICODE)
 			if(mytext2 in myLingoesListWords):
 				self.setFixedSize(400, 200)
 				self.outputBox.setFont(self.outputFont3)
