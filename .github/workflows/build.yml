@@ -13,12 +13,64 @@ permissions:
   contents: write
 
 jobs:
-  build-windows:
-    runs-on: windows-latest
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.versioning.outputs.version }}
     steps:
     - uses: actions/checkout@v4
       with:
         fetch-depth: 0
+
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+
+    - name: Calculate and Set Version
+      id: versioning
+      run: |
+        CURRENT_VERSION=$(cat VERSION || echo "0.0.0")
+        BRANCH="${{ github.head_ref }}"
+        if [ -z "$BRANCH" ]; then BRANCH="${{ github.ref_name }}"; fi
+        
+        NEW_VERSION=$(python scripts/increment_version.py $CURRENT_VERSION $BRANCH)
+        echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+        echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+        
+        # Update files
+        echo -n "$NEW_VERSION" > VERSION
+        sed -i "s/__version__ = \".*\"/__version__ = \"$NEW_VERSION\"/" src/fake_lingoes/__init__.py
+        sed -i "s/#define MyAppVersion \".*\"/#define MyAppVersion \"$NEW_VERSION\"/" Installer/installer.iss
+
+    - name: Commit and Tag
+      if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/release')
+      run: |
+        git config user.name "github-actions"
+        git config user.email "github-actions@github.com"
+        git add VERSION src/fake_lingoes/__init__.py Installer/installer.iss
+        git commit -m "chore: bump version to ${{ env.NEW_VERSION }} [skip ci]" || echo "No changes to commit"
+        git tag "v${{ env.NEW_VERSION }}"
+        git push origin HEAD --tags
+
+  build-windows:
+    needs: prepare
+    runs-on: windows-latest
+    env:
+      VERSION: ${{ needs.prepare.outputs.version }}
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Sync version files
+      shell: pwsh
+      run: |
+        $newVersion = "${{ env.VERSION }}"
+        echo "Building version: $newVersion"
+        $newVersion | Out-File -FilePath VERSION -Encoding utf8 -NoNewline
+        (Get-Content src/fake_lingoes/__init__.py) -replace '__version__ = ".*"', "__version__ = ""$newVersion""" | Set-Content src/fake_lingoes/__init__.py
+        (Get-Content Installer/installer.iss) -replace '#define MyAppVersion ".*"', "#define MyAppVersion ""$newVersion""" | Set-Content Installer/installer.iss
 
     - name: Set up Python 3.12
       uses: actions/setup-python@v5
@@ -31,75 +83,44 @@ jobs:
         python -m pip install --upgrade pip setuptools wheel
         pip install -r requirements.txt
 
-    - name: Calculate and Set Version
-      id: versioning
-      shell: pwsh
-      run: |
-        $currentVersion = Get-Content VERSION
-        $branch = "${{ github.head_ref }}"
-        if (-not $branch) {
-          $branch = ("${{ github.ref_name }}")
-        }
-        
-        $newVersion = python scripts/increment_version.py $currentVersion $branch
-        echo "NEW_VERSION=$newVersion" >> $env:GITHUB_ENV
-        echo "version=$newVersion" >> $env:GITHUB_OUTPUT
-        
-        $newVersion | Out-File -FilePath VERSION -Encoding utf8 -NoNewline
-        (Get-Content src/fake_lingoes/__init__.py) -replace '__version__ = ".*"', "__version__ = ""$newVersion""" | Set-Content src/fake_lingoes/__init__.py
-        (Get-Content Installer/installer.iss) -replace '#define MyAppVersion ".*"', "#define MyAppVersion ""$newVersion""" | Set-Content Installer/installer.iss
-
     - name: Build with PyInstaller
       run: |
         pyinstaller FakeLingoes.spec
 
-    - name: Download Tesseract Installer
+    - name: Download Tesseract
       shell: pwsh
       run: |
         $tesseractPath = "Installer/tesseract-ocr-w64-setup-5.5.0.20241111.exe"
         if (-not (Test-Path $tesseractPath)) {
-          echo "Downloading Tesseract installer..."
           Invoke-WebRequest -Uri "https://github.com/UB-Mannheim/tesseract/wiki/download/tesseract-ocr-w64-setup-5.5.0.20241111.exe" -OutFile $tesseractPath
-        } else {
-          echo "Tesseract installer already exists in Installer/ folder."
         }
 
-    - name: Compile Inno Setup Script
+    - name: Compile Inno Setup
       run: |
         ./Installer/InnoSetup/ISCC.exe Installer/installer.iss
 
-    - name: Upload Installer Artifact
+    - name: Upload Windows Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: FakeLingoes_Setup_${{ env.NEW_VERSION || steps.versioning.outputs.version }}
-        path: Installer/installer_output/FakeLingoes_Setup_${{ env.NEW_VERSION || steps.versioning.outputs.version }}.exe
-
-    - name: Commit and Tag Version
-      if: github.event_name == 'push' && (github.ref == 'refs/heads/release' || github.ref == 'refs/heads/main')
-      shell: pwsh
-      run: |
-        git config user.name "github-actions"
-        git config user.email "github-actions@github.com"
-        git add VERSION src/fake_lingoes/__init__.py Installer/installer.iss
-        git commit -m "chore: bump version to ${{ env.NEW_VERSION }} [skip ci]"
-        git tag "v${{ env.NEW_VERSION }}"
-        git push origin HEAD --tags
-
-    - name: Create Release (Windows)
-      if: (github.event_name == 'push' && github.ref == 'refs/heads/release') || contains(github.ref, 'tags')
-      uses: softprops/action-gh-release@v2
-      with:
-        tag_name: v${{ env.NEW_VERSION || steps.versioning.outputs.version }}
-        files: Installer/installer_output/FakeLingoes_Setup_${{ env.NEW_VERSION || steps.versioning.outputs.version }}.exe
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        name: FakeLingoes_Setup_${{ env.VERSION }}
+        path: Installer/installer_output/FakeLingoes_Setup_${{ env.VERSION }}.exe
 
   build-linux:
+    needs: prepare
     runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ needs.prepare.outputs.version }}
     steps:
     - uses: actions/checkout@v4
       with:
         fetch-depth: 0
+
+    - name: Sync version files
+      run: |
+        NEW_VERSION="${{ env.VERSION }}"
+        echo "Building version: $NEW_VERSION"
+        echo -n "$NEW_VERSION" > VERSION
+        sed -i "s/__version__ = \".*\"/__version__ = \"$NEW_VERSION\"/" src/fake_lingoes/__init__.py
 
     - name: Set up Python 3.12
       uses: actions/setup-python@v5
@@ -117,34 +138,35 @@ jobs:
         python -m pip install --upgrade pip setuptools wheel
         pip install -r requirements.txt
 
-    - name: Calculate and Set Version
-      id: versioning
-      run: |
-        CURRENT_VERSION=$(cat VERSION)
-        BRANCH="${{ github.head_ref }}"
-        if [ -z "$BRANCH" ]; then BRANCH="${{ github.ref_name }}"; fi
-        
-        NEW_VERSION=$(python scripts/increment_version.py $CURRENT_VERSION $BRANCH)
-        echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
-        # We don't commit from here, only use the version variable
-
     - name: Build Debian Package
       run: |
         chmod +x scripts/build_deb.sh
         # The script picks up VERSION env var
+        export VERSION=${{ env.VERSION }}
         ./scripts/build_deb.sh
 
-    - name: Upload Artifact
+    - name: Upload Linux Artifact
       uses: actions/upload-artifact@v4
       with:
         name: fakelingoes_${{ env.VERSION }}_amd64.deb
         path: Installer/fakelingoes_${{ env.VERSION }}_amd64.deb
 
-    - name: Release (Linux)
-      if: (github.event_name == 'push' && github.ref == 'refs/heads/release') || contains(github.ref, 'tags')
+  create-release:
+    needs: [build-windows, build-linux, prepare]
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/release' || startsWith(github.ref, 'refs/tags/v'))
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/download-artifact@v4
+      with:
+        path: artifacts
+
+    - name: Create Release
       uses: softprops/action-gh-release@v2
       with:
-        tag_name: v${{ env.VERSION }}
-        files: Installer/fakelingoes_${{ env.VERSION }}_amd64.deb
+        tag_name: v${{ needs.prepare.outputs.version }}
+        name: Release v${{ needs.prepare.outputs.version }}
+        files: |
+          artifacts/FakeLingoes_Setup_${{ needs.prepare.outputs.version }}/*.exe
+          artifacts/fakelingoes_${{ needs.prepare.outputs.version }}_amd64.deb/*.deb
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
