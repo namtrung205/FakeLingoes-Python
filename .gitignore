@@ -14,3 +14,6 @@ Release
 Capture/
 installer_output/
 /.vs
+build_deb/
+# Ignore deb packages in Installer
+Installer/*.deb
