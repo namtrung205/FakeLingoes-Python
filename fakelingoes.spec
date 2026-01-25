@@ -9,8 +9,8 @@ a = Analysis(['src/fake_lingoes/main.py'],
              pathex=['src'],
              binaries=[],
              datas=[
-                 ('Resources', 'Resources'),
-                 ('Configuration', 'Configuration'),
+                 ('resources', 'resources'),
+                 ('configuration', 'configuration'),
                  ('icon.ico', '.')
              ],
              hiddenimports=[

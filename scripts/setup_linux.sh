@@ -33,6 +33,6 @@ pip install --upgrade pip
 pip install -r requirements.txt
 
 # Create necessary directories
-mkdir -p Tempfile Capture
+mkdir -p tempfile capture
 
 echo "Setup complete! Run the app using: source venv_linux/bin/activate && python src/fake_lingoes/main.py"

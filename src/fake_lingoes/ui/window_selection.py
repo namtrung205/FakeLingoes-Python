@@ -16,7 +16,7 @@ from fake_lingoes.ui.widgets import myIconButton
 from fake_lingoes.utils.path_helper import get_resource_path
 # Incon
 
-class CaptureWindow(QtWidgets.QWidget):
+class captureWindow(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
         # self.setGeometry(30,30,600,400)
@@ -31,7 +31,7 @@ class CaptureWindow(QtWidgets.QWidget):
         # self.capButton = myIconButton()
         # self.capButton.setParent(self)
         iconTrans = QIcon()
-        iconTrans.addPixmap(QPixmap(get_resource_path("Resources/Images/camera.png")))
+        iconTrans.addPixmap(QPixmap(get_resource_path("resources/images/camera.png")))
         # self.capButton.setFlat(True)
         self.capButton.setIcon(iconTrans)
         self.capButton.setIconSize(QSize(30,30))
@@ -72,7 +72,7 @@ class CaptureWindow(QtWidgets.QWidget):
         screen = QApplication.primaryScreen()
         screenshot = screen.grabWindow(0, x, y, w, h)
         
-        capture_dir = "Capture"
+        capture_dir = "capture"
         os.makedirs(capture_dir, exist_ok=True)
         screenshot.save(os.path.join(capture_dir, "capture.png"), "png")
 
@@ -135,7 +135,7 @@ class MainWindow(QtWidgets.QWidget):
         self.captureAreaButton = myIconButton()
         self.captureAreaButton.setParent(self)
         selectAreaIcon = QIcon()
-        selectAreaIcon.addPixmap(QPixmap(get_resource_path("Resources/Images/SelectArea.png")))
+        selectAreaIcon.addPixmap(QPixmap(get_resource_path("resources/images/SelectArea.png")))
         self.captureAreaButton.setFlat(True)
         self.captureAreaButton.setIcon(selectAreaIcon)
         self.captureAreaButton.setIconSize(QSize(20,20))
@@ -151,14 +151,14 @@ class MainWindow(QtWidgets.QWidget):
 
         self.captureAreaButton.clicked.connect(self.captureAreaButton_click)
 
-        self.wincap = CaptureWindow()
+        self.wincap = captureWindow()
         self.wincap.hide()
 
         # connect
 
     def captureAreaButton_click(self):
         self.wincap.close()
-        self.wincap = CaptureWindow()
+        self.wincap = captureWindow()
         self.wincap.show()
         
 

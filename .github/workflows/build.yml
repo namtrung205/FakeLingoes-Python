@@ -41,14 +41,14 @@ jobs:
         # Update files
         echo -n "$NEW_VERSION" > VERSION
         sed -i "s/__version__ = \".*\"/__version__ = \"$NEW_VERSION\"/" src/fake_lingoes/__init__.py
-        sed -i "s/#define MyAppVersion \".*\"/#define MyAppVersion \"$NEW_VERSION\"/" Installer/installer.iss
+        sed -i "s/#define MyAppVersion \".*\"/#define MyAppVersion \"$NEW_VERSION\"/" installer/installer.iss
 
     - name: Commit and Tag
       if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/release')
       run: |
         git config user.name "github-actions"
         git config user.email "github-actions@github.com"
-        git add VERSION src/fake_lingoes/__init__.py Installer/installer.iss
+        git add VERSION src/fake_lingoes/__init__.py installer/installer.iss
         git commit -m "chore: bump version to ${{ env.NEW_VERSION }} [skip ci]" || echo "No changes to commit"
         git tag "v${{ env.NEW_VERSION }}"
         git push origin HEAD --tags
@@ -70,7 +70,7 @@ jobs:
         echo "Building version: $newVersion"
         $newVersion | Out-File -FilePath VERSION -Encoding utf8 -NoNewline
         (Get-Content src/fake_lingoes/__init__.py) -replace '__version__ = ".*"', "__version__ = ""$newVersion""" | Set-Content src/fake_lingoes/__init__.py
-        (Get-Content Installer/installer.iss) -replace '#define MyAppVersion ".*"', "#define MyAppVersion ""$newVersion""" | Set-Content Installer/installer.iss
+        (Get-Content installer/installer.iss) -replace '#define MyAppVersion ".*"', "#define MyAppVersion ""$newVersion""" | Set-Content installer/installer.iss
 
     - name: Set up Python 3.12
       uses: actions/setup-python@v5
@@ -85,25 +85,25 @@ jobs:
 
     - name: Build with PyInstaller
       run: |
-        pyinstaller FakeLingoes.spec
+        pyinstaller fakelingoes.spec
 
     - name: Download Tesseract
       shell: pwsh
       run: |
-        $tesseractPath = "Installer/tesseract-ocr-w64-setup-5.5.0.20241111.exe"
+        $tesseractPath = "installer/tesseract-ocr-w64-setup-5.5.0.20241111.exe"
         if (-not (Test-Path $tesseractPath)) {
           Invoke-WebRequest -Uri "https://github.com/UB-Mannheim/tesseract/wiki/download/tesseract-ocr-w64-setup-5.5.0.20241111.exe" -OutFile $tesseractPath
         }
 
     - name: Compile Inno Setup
       run: |
-        ./Installer/InnoSetup/ISCC.exe Installer/installer.iss
+        ./installer/InnoSetup/ISCC.exe installer/installer.iss
 
     - name: Upload Windows Artifact
       uses: actions/upload-artifact@v4
       with:
         name: fakelingoes_setup_${{ env.VERSION }}
-        path: Installer/installer_output/fakelingoes_setup_${{ env.VERSION }}.exe
+        path: installer/installer_output/fakelingoes_setup_${{ env.VERSION }}.exe
 
   build-linux:
     needs: prepare
@@ -149,7 +149,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: fakelingoes_${{ env.VERSION }}_amd64.deb
-        path: Installer/fakelingoes_${{ env.VERSION }}_amd64.deb
+        path: installer/fakelingoes_${{ env.VERSION }}_amd64.deb
 
   create-release:
     needs: [build-windows, build-linux, prepare]

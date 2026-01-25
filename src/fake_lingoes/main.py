@@ -46,8 +46,8 @@ if __name__ == '__main__':
     freeze_support()
 
     # Create directories relative to current working directory
-    os.makedirs('Tempfile', exist_ok=True)
-    os.makedirs('Capture', exist_ok=True)
+    os.makedirs('tempfile', exist_ok=True)
+    os.makedirs('capture', exist_ok=True)
     
     # Enable High DPI scaling
     QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
@@ -73,7 +73,7 @@ if __name__ == '__main__':
             "Oxford_appKey" : None,
         }
         
-        config_path = get_resource_path(os.path.join("Configuration", "configuration.cfg"))
+        config_path = get_resource_path(os.path.join("configuration", "configuration.cfg"))
         if os.path.exists(config_path):
             with open(config_path) as fileConfig:
                 for line in fileConfig:
@@ -101,7 +101,7 @@ if __name__ == '__main__':
         print(f"Using default setting due to: {e}")
 
     try:
-        style_path = get_resource_path(os.path.join("Resources", "Styles", "styleWindow.css"))
+        style_path = get_resource_path(os.path.join("resources", "styles", "style_window.css"))
         if os.path.exists(style_path):
             fileStyle = open(style_path).read()
             app.setStyleSheet(fileStyle)
@@ -110,7 +110,7 @@ if __name__ == '__main__':
     except Exception as e:
         print(f"Using default style due to: {e}")
 
-    tempFolder = "Tempfile"
+    tempFolder = "tempfile"
     # Delete all tempfile
     for the_file in os.listdir(tempFolder):
         file_path = os.path.join(tempFolder, the_file)

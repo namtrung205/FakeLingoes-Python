@@ -15,7 +15,7 @@ APP_NAME="fakelingoes"
 ARCH="amd64"
 BUILD_DIR="build_deb"
 DIST_DIR="dist/$APP_NAME"
-DEB_NAME="Installer/${APP_NAME}_${VERSION}_${ARCH}.deb"
+DEB_NAME="installer/${APP_NAME}_${VERSION}_${ARCH}.deb"
 
 echo "=== Building FakeLingoes Debian Package ==="
 
@@ -34,7 +34,7 @@ if [ ! -d "$DIST_DIR" ]; then
     else
         PYINSTALLER_CMD="pyinstaller"
     fi
-    $PYINSTALLER_CMD --clean FakeLingoes.spec
+    $PYINSTALLER_CMD --clean fakelingoes.spec
 else
     echo "PyInstaller build found. Skipping rebuild to save time."
     echo "Run 'pyinstaller --clean FakeLingoes.spec' manually if you changed code."
