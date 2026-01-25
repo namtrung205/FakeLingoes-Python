@@ -54,8 +54,6 @@ if __name__ == '__main__':
     QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
     
     app = QApplication(sys.argv)
-    # Prevent app from exiting when window is hidden (minimize to tray)
-    app.setQuitOnLastWindowClosed(False)
     try:
         mySettingDict = {
             "Time_out":10,
