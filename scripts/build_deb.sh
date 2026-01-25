@@ -2,7 +2,16 @@
 set -e
 
 APP_NAME="fakelingoes"
-VERSION="0.0.2"
+# Read version from file or allow override
+if [ -z "$VERSION" ]; then
+    if [ -f "VERSION" ]; then
+        VERSION=$(cat VERSION)
+    else
+        VERSION="0.0.0"
+    fi
+fi
+
+APP_NAME="fakelingoes"
 ARCH="amd64"
 BUILD_DIR="build_deb"
 DIST_DIR="dist/Fake Lingoes"
