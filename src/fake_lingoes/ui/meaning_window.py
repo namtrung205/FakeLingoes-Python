@@ -167,7 +167,7 @@ class MeaningWindow(QWidget):
 
 		self.addToDbButton = myIconButton()
 		iconaddToDb = QIcon()
-		iconaddToDb.addPixmap(QPixmap(get_resource_path("Resources/Images/import.png")))
+		iconaddToDb.addPixmap(QPixmap(get_resource_path("resources/images/import.png")))
 		self.addToDbButton.setFlat(True)
 		self.addToDbButton.setIcon(iconaddToDb)
 		self.addToDbButton.setIconSize(QSize(20,20))
@@ -176,7 +176,7 @@ class MeaningWindow(QWidget):
 
 		self.refeshMeaningButton = myIconButton()
 		iconfreshMean = QIcon()
-		iconfreshMean.addPixmap(QPixmap(get_resource_path("Resources/Images/refresh.png")))
+		iconfreshMean.addPixmap(QPixmap(get_resource_path("resources/images/refresh.png")))
 		self.refeshMeaningButton.setFlat(True)
 		self.refeshMeaningButton.setIcon(iconfreshMean)
 		self.refeshMeaningButton.setIconSize(QSize(20,20))
@@ -186,7 +186,7 @@ class MeaningWindow(QWidget):
 		self.transMeaningButton = myIconButton()
 		self.transMeaningButton.hide()
 		icontransMean = QIcon()
-		icontransMean.addPixmap(QPixmap(get_resource_path("Resources/Images/transMeaning.png")))
+		icontransMean.addPixmap(QPixmap(get_resource_path("resources/images/transMeaning.png")))
 		self.transMeaningButton.setFlat(True)
 		self.transMeaningButton.setIcon(icontransMean)
 		self.transMeaningButton.setIconSize(QSize(20,20))
@@ -394,7 +394,7 @@ class MeaningWindow(QWidget):
 # 	import sys
 # 	from PyQt5.QtWidgets import QApplication
 # 	import os
-# 	os.makedirs('.\\Tempfile', exist_ok = True)
+# 	os.makedirs('.\\tempfile', exist_ok = True)
 # 	app = QApplication(sys.argv)
 # 	app.setWindowIcon(QIcon('Icon.ico'))
 # 	# Set style
@@ -413,7 +413,7 @@ class MeaningWindow(QWidget):
 # 						QLabel{border: 0px solid;color: black;}
 # 						""")
 
-# 	tempFolder = ".\\Tempfile"
+# 	tempFolder = ".\\tempfile"
 # 	# Delete all tempfile
 # 	for the_file in os.listdir(tempFolder):
 # 		file_path = os.path.join(tempFolder, the_file)

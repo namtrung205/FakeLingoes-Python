@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import (QDialog, QFileDialog, QGridLayout, QHBoxLayout, QMe
 from fake_lingoes.ui.meaning_window import MeaningWindow
 from fake_lingoes.ui.widgets import myIconButton, myTextEdit
 from fake_lingoes.services.translation.translator import googleTrans
-from fake_lingoes.ui.window_selection import CaptureWindow
+from fake_lingoes.ui.window_selection import captureWindow
 from fake_lingoes.services.ocr.v3_image_to_text import ImageToText, ImageToText_Api
 from fake_lingoes.services.audio.speak import *
 # from fake_lingoes.services.dictionary.import_to_database import *
@@ -65,12 +65,12 @@ myLangDict = {
 
 # listNameLang = sorted(list(myLangDict.keys()))
 
-# E:\DEV\02. Fake lingoes and ocr\V5.4\Resources\Dictionaries\English_Vietnamese_Dic.txt
+# E:\DEV\02. Fake lingoes and ocr\V5.4\resources\Dictionaries\english_vietnamese_dic.txt
 # Impoert tu dien vao trong 
 # Load Dictionary
 lingoesDic = {}
 
-relative_path = "Resources/Dictionaries/English_Vietnamese_Dic.txt"
+relative_path = "resources/dictionaries/english_vietnamese_dic.txt"
 full_path = get_resource_path(relative_path)
 
 if os.path.exists(full_path):
@@ -164,7 +164,7 @@ class TranslateMainWindow(QWidget):
 		self.clipboard
 		
 		# Temp files, Folders, variable...
-		self.myPathMp3 = ".\\Tempfile\\myTts.mp3"
+		self.myPathMp3 = ".\\tempfile\\myTts.mp3"
 		self.fileCount = 0
 
 		self.fromSym = "en"
@@ -235,7 +235,7 @@ class TranslateMainWindow(QWidget):
 
 		self.captureAreaButton = myIconButton()
 		selectAreaIcon = QIcon()
-		selectAreaIcon.addPixmap(QPixmap(get_resource_path("Resources/Images/SelectArea.png")))
+		selectAreaIcon.addPixmap(QPixmap(get_resource_path("resources/images/SelectArea.png")))
 		self.captureAreaButton.setFlat(True)
 		self.captureAreaButton.setIcon(selectAreaIcon)
 		self.captureAreaButton.setIconSize(QSize(16,16))
@@ -245,7 +245,7 @@ class TranslateMainWindow(QWidget):
 
 		self.captureApiButton = myIconButton()
 		selectAreaApiIcon = QIcon()
-		selectAreaApiIcon.addPixmap(QPixmap(get_resource_path("Resources/Images/claroreadcloud.png")))
+		selectAreaApiIcon.addPixmap(QPixmap(get_resource_path("resources/images/claroreadcloud.png")))
 		self.captureApiButton.setFlat(True)
 		self.captureApiButton.setIcon(selectAreaApiIcon)
 		self.captureApiButton.setIconSize(QSize(20,20))
@@ -283,7 +283,7 @@ class TranslateMainWindow(QWidget):
 
 		self.transButton = myIconButton()
 		iconTrans = QIcon()
-		iconTrans.addPixmap(QPixmap(get_resource_path("Resources/Images/trans.png")))
+		iconTrans.addPixmap(QPixmap(get_resource_path("resources/images/trans.png")))
 		self.transButton.setFlat(True)
 		self.transButton.setIcon(iconTrans)
 		self.transButton.setIconSize(QSize(20,20))
@@ -296,12 +296,12 @@ class TranslateMainWindow(QWidget):
 		# Button Listen Mode
 		self.streamButton = myIconButton()
 		self.iconStreamG = QIcon()
-		self.iconStreamG.addPixmap(QPixmap(get_resource_path("Resources/Images/StreamMusicG.png")))
+		self.iconStreamG.addPixmap(QPixmap(get_resource_path("resources/images/StreamMusicG.png")))
 		self.streamButton.setFlat(True)
 		self.streamMode = "G"
 		
 		self.iconStreamM = QIcon()
-		self.iconStreamM.addPixmap(QPixmap(get_resource_path("Resources/Images/StreamMusicM.png")))
+		self.iconStreamM.addPixmap(QPixmap(get_resource_path("resources/images/StreamMusicM.png")))
 		self.streamButton.setFlat(True)
 
 		self.streamButton.setIcon(self.iconStreamG)
@@ -313,7 +313,7 @@ class TranslateMainWindow(QWidget):
 		# Button Listen
 		self.listenButton = myIconButton()
 		iconListen = QIcon()
-		iconListen.addPixmap(QPixmap(get_resource_path("Resources/Images/Listen.png")))
+		iconListen.addPixmap(QPixmap(get_resource_path("resources/images/Listen.png")))
 		self.listenButton.setFlat(True)
 		self.listenButton.setIcon(iconListen)
 		self.listenButton.setIconSize(QSize(20,20))
@@ -332,7 +332,7 @@ class TranslateMainWindow(QWidget):
 		# Button large
 		self.largeButton = myIconButton()
 		iconLarge = QIcon()
-		iconLarge.addPixmap(QPixmap(get_resource_path("Resources/Images/large.png")))
+		iconLarge.addPixmap(QPixmap(get_resource_path("resources/images/large.png")))
 		self.largeButton.setFlat(True)
 		self.largeButton.setIcon(iconLarge)
 		self.largeButton.setIconSize(QSize(20,20))
@@ -351,7 +351,7 @@ class TranslateMainWindow(QWidget):
 
 		self.swapButton = myIconButton()
 		iconSwap = QIcon()
-		iconSwap.addPixmap(QPixmap(get_resource_path("Resources/Images/swap.png")))
+		iconSwap.addPixmap(QPixmap(get_resource_path("resources/images/swap.png")))
 		self.swapButton.setFlat(True)
 		self.swapButton.setIcon(iconSwap)
 		self.swapButton.setIconSize(QSize(20,20))
@@ -373,7 +373,7 @@ class TranslateMainWindow(QWidget):
 
 		self.expandButton = myIconButton()
 		iconExpand = QIcon()
-		iconExpand.addPixmap(QPixmap(get_resource_path("Resources/Images/expand.png")))
+		iconExpand.addPixmap(QPixmap(get_resource_path("resources/images/expand.png")))
 		self.expandButton.setFlat(True)
 		self.expandButton.setIcon(iconExpand)
 		self.expandButton.setIconSize(QSize(16,16))
@@ -427,7 +427,7 @@ class TranslateMainWindow(QWidget):
 
 		##CONNECT AND OTHER EVENT
 		# top bar
-		# Capture
+		# capture
 		self.captureAreaButton.clicked.connect(self.captureAreaButton_click)
 		self.captureApiButton.clicked.connect(self.captureApiButton_click)
 
@@ -450,8 +450,8 @@ class TranslateMainWindow(QWidget):
 		# self.meaningdWindow.addToDbButton.clicked.connect(self.addToDbButton_Click)
 
 
-		# Capture
-		self.wincap = CaptureWindow()
+		# capture
+		self.wincap = captureWindow()
 		self.wincap.hide()
 	
 	def update_monitor_info(self):
@@ -571,12 +571,12 @@ class TranslateMainWindow(QWidget):
 
 			self.hideButton_Clicked()
 			self.wincap.close()
-			self.wincap = CaptureWindow()
+			self.wincap = captureWindow()
 			# self.wincap.update()
 			self.wincap.show()
 			self.wincap.capButton.clicked.connect(self.WinCap_CapButton_Api_Click)
 			self.wincap.capShortcut.activated.connect(self.WinCap_CapButton_Api_Click)
-			self.wincap.cancelShortcut.activated.connect(self.cancel_Capture_active)
+			self.wincap.cancelShortcut.activated.connect(self.cancel_capture_active)
 		except Exception as e:
 			QMessageBox.information(self, "Information", "Error Wincap " + str(e))
 		self.functionFinished()
@@ -595,7 +595,7 @@ class TranslateMainWindow(QWidget):
 
 	# 	self.show()
 
-	# 	# textFromImageApi = myTimer(ImageToText_Api, (".\Capture\\capture.png"), 10)
+	# 	# textFromImageApi = myTimer(ImageToText_Api, (".\capture\\capture.png"), 10)
 
 	# 	self.inputBox.setText(ImageToText_Api())
 	# 	self.transButton_Click()
@@ -621,7 +621,7 @@ class TranslateMainWindow(QWidget):
 
 				self.show()
 
-				capture_img_path = os.path.join("Capture", "capture.png")
+				capture_img_path = os.path.join("capture", "capture.png")
 				textFromImageApi = myTimer(ImageToText_Api, (self.SpaceOCR_apiKey, capture_img_path,), self.myTimeOutCap)
 
 				self.inputBox.setText(textFromImageApi)
@@ -637,12 +637,12 @@ class TranslateMainWindow(QWidget):
 			self.functionStart()
 			self.hideButton_Clicked()
 			self.wincap.close()
-			self.wincap = CaptureWindow()
+			self.wincap = captureWindow()
 			# self.wincap.update()
 			self.wincap.show()
 			self.wincap.capButton.clicked.connect(self.WinCap_CapButton_Click)
 			self.wincap.capShortcut.activated.connect(self.WinCap_CapButton_Click)
-			self.wincap.cancelShortcut.activated.connect(self.cancel_Capture_active)
+			self.wincap.cancelShortcut.activated.connect(self.cancel_capture_active)
 		except NameError as e:
 			QMessageBox.information(self, "Information", "Error Cap" + str(e))
 		self.functionFinished()
@@ -671,7 +671,7 @@ class TranslateMainWindow(QWidget):
 		self.functionFinished()
 
 
-	def cancel_Capture_active(self):
+	def cancel_capture_active(self):
 		self.wincap.hide()
 		# self.show()
 
@@ -830,7 +830,7 @@ class TranslateMainWindow(QWidget):
 		self.functionStart()
 		try:
 			# self.transButton_Click()
-			self.myPathMp3 = os.path.join("Tempfile", "myTts.mp3")
+			self.myPathMp3 = os.path.join("tempfile", "myTts.mp3")
 			self.outTextChange(self.myPathMp3)
 			
 		except (AssertionError, AttributeError, gTTSError):
@@ -851,7 +851,7 @@ class TranslateMainWindow(QWidget):
 		except (NameError, PermissionError):
 			try:
 				self.fileCount+=1
-				self.myPathMp3 = os.path.join("Tempfile", f"myTts{self.fileCount}.mp3")
+				self.myPathMp3 = os.path.join("tempfile", f"myTts{self.fileCount}.mp3")
 				self.outTextChange(self.myPathMp3)
 			except:
 				if str(self.inputBox.toPlainText()).count(".") > 2 or str(self.inputBox.toPlainText()).count(" ") > 30:
@@ -862,7 +862,7 @@ class TranslateMainWindow(QWidget):
 					return None	
 		except Exception as e:
 			QMessageBox.information(self,'Information' ,"Error 3:" + str(e))
-			self.myPathMp3 = os.path.join("Tempfile", "myTts.mp3")
+			self.myPathMp3 = os.path.join("tempfile", "myTts.mp3")
 			return None
 
 		# self.statusLabel.setText("Last time take: %s s" % str(round(time.time() - start_time, 2)))
@@ -1061,15 +1061,15 @@ class TranslateMainWindow(QWidget):
 # 	from PyQt5.QtWidgets import QApplication
 # 	import os
 
-# 	os.makedirs('.\\Tempfile', exist_ok = True)
-# 	os.makedirs('.\\Capture', exist_ok = True)
+# 	os.makedirs('.\\tempfile', exist_ok = True)
+# 	os.makedirs('.\\capture', exist_ok = True)
 # 	app = QApplication(sys.argv)
 # 	app.setWindowIcon(QIcon('Icon.ico'))
 # 	# Set style
-# 	fileStyle = open(".\Resources\\Styles\\styleWindow.css").read()
+# 	fileStyle = open(".\resources\\Styles\\style_window.css").read()
 # 	app.setStyleSheet(fileStyle)
 
-# 	tempFolder = ".\\Tempfile"
+# 	tempFolder = ".\\tempfile"
 # 	# Delete all tempfile
 # 	for the_file in os.listdir(tempFolder):
 # 		file_path = os.path.join(tempFolder, the_file)

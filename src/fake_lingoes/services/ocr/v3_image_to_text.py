@@ -4,7 +4,7 @@ from pytesseract import image_to_string, pytesseract
 
 from fake_lingoes.services.ocr.orc_space_lib import OCRSpace
 
-def ImageToText(image=os.path.join("Capture", "capture.png")):
+def ImageToText(image=os.path.join("capture", "capture.png")):
 	try:
 		imgOriginal = Image.open(image)
 
@@ -17,7 +17,7 @@ def ImageToText(image=os.path.join("Capture", "capture.png")):
 		imgContrast = ImageEnhance.Contrast(imgSharpeE)
 		imgContrastE = imgContrast.enhance(5)
 
-		output_path = os.path.join("Capture", "capture2.png")
+		output_path = os.path.join("capture", "capture2.png")
 		imgContrastE.save(output_path)
 
 		imgModified = Image.open(output_path)
@@ -51,7 +51,7 @@ def ImageToText(image=os.path.join("Capture", "capture.png")):
 	except Exception as e:
 		print("Error:" + str(e))
 
-def ImageToText_Api(api_key, image=os.path.join("Capture", "capture.png")):
+def ImageToText_Api(api_key, image=os.path.join("capture", "capture.png")):
 	try:
 		imgOriginal = Image.open(image)
 
@@ -64,7 +64,7 @@ def ImageToText_Api(api_key, image=os.path.join("Capture", "capture.png")):
 		imgContrast = ImageEnhance.Contrast(imgSharpeE)
 		imgContrastE = imgContrast.enhance(1)
 
-		output_path = os.path.join("Capture", "capture2.png")
+		output_path = os.path.join("capture", "capture2.png")
 		imgContrastE.save(output_path)
 
 		# Set your APi key
