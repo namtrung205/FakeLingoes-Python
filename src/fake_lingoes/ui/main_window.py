@@ -862,11 +862,18 @@ class TranslateMainWindow(QWidget):
 					return None	
 		except Exception as e:
 			QMessageBox.information(self,'Information' ,"Error 3:" + str(e))
+			self.myPathMp3 = os.path.join("Tempfile", "myTts.mp3")
 			return None
 
 		# self.statusLabel.setText("Last time take: %s s" % str(round(time.time() - start_time, 2)))
 		if str(self.inputBox.toPlainText()).count(".") > 2 or str(self.inputBox.toPlainText()).count(" ") > 30:
-			os.startfile(self.myPathMp3)
+			import platform
+			if platform.system() == "Windows":
+				os.startfile(self.myPathMp3)
+			else:
+				# Linux/MacOS opener
+				import subprocess
+				subprocess.call(['xdg-open', self.myPathMp3])
 		else:
 			playsound.playsound(os.path.abspath(self.myPathMp3))
 		self.functionFinished()
