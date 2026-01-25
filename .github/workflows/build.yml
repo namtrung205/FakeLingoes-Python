@@ -13,9 +13,8 @@ permissions:
   contents: write
 
 jobs:
-  build:
+  build-windows:
     runs-on: windows-latest
-
     steps:
     - uses: actions/checkout@v4
       with:
@@ -42,19 +41,12 @@ jobs:
           $branch = ("${{ github.ref_name }}")
         }
         
-        # If it's a push to release/main, try to find the source branch from merge message
-        # This is a bit tricky, but we can default to 'bugfix/' logic if unknown
         $newVersion = python scripts/increment_version.py $currentVersion $branch
         echo "NEW_VERSION=$newVersion" >> $env:GITHUB_ENV
         echo "version=$newVersion" >> $env:GITHUB_OUTPUT
         
-        # Update VERSION file
         $newVersion | Out-File -FilePath VERSION -Encoding utf8 -NoNewline
-
-        # Update src/fake_lingoes/__init__.py
         (Get-Content src/fake_lingoes/__init__.py) -replace '__version__ = ".*"', "__version__ = ""$newVersion""" | Set-Content src/fake_lingoes/__init__.py
-
-        # Update Installer/installer.iss
         (Get-Content Installer/installer.iss) -replace '#define MyAppVersion ".*"', "#define MyAppVersion ""$newVersion""" | Set-Content Installer/installer.iss
 
     - name: Build with PyInstaller
@@ -93,11 +85,66 @@ jobs:
         git tag "v${{ env.NEW_VERSION }}"
         git push origin HEAD --tags
 
-    - name: Create Release
+    - name: Create Release (Windows)
       if: (github.event_name == 'push' && github.ref == 'refs/heads/release') || contains(github.ref, 'tags')
       uses: softprops/action-gh-release@v2
       with:
         tag_name: v${{ env.NEW_VERSION || steps.versioning.outputs.version }}
         files: Installer/installer_output/FakeLingoes_Setup_${{ env.NEW_VERSION || steps.versioning.outputs.version }}.exe
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+        cache: 'pip'
+
+    - name: Install System Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential pkg-config python3-dev python3-venv tesseract-ocr libasound2-dev espeak scrot libxcb-cursor0 libxkbcommon-x11-0 libdbus-1-3 libgl1 libgirepository1.0-dev libcairo2-dev gir1.2-gstreamer-1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-tools gir1.2-appindicator3-0.1 gir1.2-ayatanaappindicator3-0.1
+
+    - name: Install Python Dependencies
+      run: |
+        python -m pip install --upgrade pip setuptools wheel
+        pip install -r requirements.txt
+
+    - name: Calculate and Set Version
+      id: versioning
+      run: |
+        CURRENT_VERSION=$(cat VERSION)
+        BRANCH="${{ github.head_ref }}"
+        if [ -z "$BRANCH" ]; then BRANCH="${{ github.ref_name }}"; fi
+        
+        NEW_VERSION=$(python scripts/increment_version.py $CURRENT_VERSION $BRANCH)
+        echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
+        # We don't commit from here, only use the version variable
+
+    - name: Build Debian Package
+      run: |
+        chmod +x scripts/build_deb.sh
+        # The script picks up VERSION env var
+        ./scripts/build_deb.sh
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: fakelingoes_${{ env.VERSION }}_amd64.deb
+        path: Installer/fakelingoes_${{ env.VERSION }}_amd64.deb
+
+    - name: Release (Linux)
+      if: (github.event_name == 'push' && github.ref == 'refs/heads/release') || contains(github.ref, 'tags')
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: v${{ env.VERSION }}
+        files: Installer/fakelingoes_${{ env.VERSION }}_amd64.deb
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
