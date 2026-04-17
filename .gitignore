@@ -1,0 +1,19 @@
+venv/
+venv_win/
+venv_linux/
+.venv/
+env/
+__pycache__/
+*.pyc
+dist/
+build/
+tempfile/
+Capture/
+build_tmp
+release
+capture/
+installer_output/
+/.vs
+build_deb/
+# Ignore deb packages in Installer
+installer/*.deb
